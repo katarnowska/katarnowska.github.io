@@ -1,0 +1,760 @@
+<!DOCTYPE html>
+<html>
+  <head>
+	 <title>Recommender System for Improving Net Promoter Score</title>
+	 <meta charset="UTF-8">
+	 <script  src="js/d3.js"></script>
+	<script  src="js/crossfilter.js"></script>
+	<script  src="js/dc.js"></script>
+	<script  src="js/colorbrewer.js"></script>
+    <script  src="js/d3.js"></script>
+    <script  src="d3/d3.csv.js"></script>
+    <script  src="d3/d3.geo.js"></script>
+    <script  src="d3/d3.geom.js"></script>
+    <link type="text/css" rel="stylesheet" href="style.css"/>
+    <link rel="stylesheet" type="text/css" href="css/bootstrap.min.css">
+	<link rel="stylesheet" type="text/css" href="css/dc.css"/>
+    <link rel="icon" type="image/x-icon" href="swallow.jpg"/>
+
+ <style type="text/css">
+
+#logo {
+    margin-right: 2em;
+    margin-top: 2em;
+        }
+
+#states path {
+  fill: #ccc;
+  stroke: #fff;
+}
+
+path.arc {
+  pointer-events: none;
+  fill: none;
+  stroke: #000;
+  display: none;
+}
+
+path.cell {
+  fill: none;
+  pointer-events: all;
+}
+
+#circle2 {
+  fill: steelblue;
+  fill-opacity: .8;
+  stroke: #fff;
+}
+
+#cells.voronoi path.cell {
+  stroke: brown;
+}
+
+#cells g:hover path.arc {
+  display: inherit;
+}
+
+select {
+width: 55px;
+margin-left: 0.0em;
+margin-right: 1.5em;
+}
+
+#fLabel {
+    margin-left: 0em;
+	margin-right: 1em;
+    white-space: nowrap;    }
+
+		
+.dc-table-column._0{
+width: 20%;
+}
+
+.dc-table-column._1{
+width: 55%;
+}
+
+.dc-table-column._2{
+width: 25%;
+}
+
+h2 {
+    margin-left: 2em;
+	align: left;
+}
+
+#select-list3 {
+	width: 90px;
+	}
+	
+#select-list4 {
+	width: 75px;
+	}
+
+
+</style>
+	
+<body>
+<!--<h4>  Client's locations and their semantic neighbors.</h4>-->
+<h1 align="center">  Customer Loyalty Improvement Recommendations</h1>
+<p align="center">Recommendations based on 
+
+<select id="select-list4">
+		  <option value="2015">2015</option> 
+		  <!--<option value="shop">Service: Shop</option> 
+		  <option value="field">Service: Field</option> -->
+		  <option value="2016">2016</option> 
+		</select>
+
+data for 
+
+<select id="select-list3">
+		  <option value="Service">Service</option> 
+		  <!--<option value="shop">Service: Shop</option> 
+		  <option value="field">Service: Field</option> -->
+		  <option value="Parts">Parts</option> 
+		</select>
+
+surveys</p>
+<h2>  1. Select the entity you'd like to analyze by clicking on the applicable dot below</h1>
+<!--<p>  Size of circle denotes size of neighborhood (extensions).
+<br> Click on the client's node to see its semantic extensions (ordered) and recommended actions below.</p>
+<h5>  Check "Show Voronoi" to see the projected area of operations for each client.</h5>-->
+
+ <div id="body">
+      <div id="footer">
+        <span>Client Semantic Neighbors</span>
+        <div class="hint">
+          mouseover for extensions for each client
+        </div>
+        <!--<div style="font-size:12px;line-height:60px;"><input type="checkbox" id="voronoi"> <label for="voronoi">show Voronoi</label></div>-->
+      </div>
+    </div>
+
+ <script type="text/javascript">
+
+var selectedSurvey = "Service";
+var selectedYear = "2015"; 
+var alertChange3 = function() {
+    //get the data value and index from the event
+    selectedSurvey = d3.event.target.value;
+	
+	cextensions(selectedSurvey+selectedYear);
+	  
+		//heatmapChart(selectedClient,selectedSurvey);
+		//rowChart(selectedClient+"n",selectedSurvey);
+		//rowChartSt(selectedClient,selectedSurvey);		  
+}  
+var alertChange4 = function() {
+    //get the data value and index from the event
+    selectedYear = d3.event.target.value;
+	
+	cextensions(selectedSurvey+selectedYear);
+	  
+		//heatmapChart(selectedClient,selectedSurvey);
+		//rowChart(selectedClient+"n",selectedSurvey);
+		//rowChartSt(selectedClient,selectedSurvey);		  
+} 
+d3.select("#select-list3").on("change", alertChange3);
+d3.select("#select-list4").on("change", alertChange4);
+
+var w = 1280,
+    h = 750;
+
+	//colors_bad=["rgb(165,0,38)","rgb(215,48,39)","rgb(244,109,67)", "rgb(253,174,97)", "rgb(255,255,191)"]
+	colors=["rgb(204,0,0)", "rgb(255,0,0)", "rgb(255,51,51)", "rgb(255,102,102)", "rgb(255,153,153)", "rgb(255,204,204)"]
+	var colorScale1 = d3.scale.quantize()
+              .domain([0, 7, 20])
+              .range(colors);
+
+var projection = d3.geo.azimuthal()
+    .mode("equidistant")
+    .origin([-98, 42])
+    .scale(1400)
+    .translate([640, 360]);
+
+var path = d3.geo.path()
+    .projection(projection);
+
+var svg = d3.select("#body").append("svg:svg")
+    .attr("width", w)
+    .attr("height", h);
+
+var states = svg.append("svg:g")
+    .attr("id", "states");
+	
+var cells = svg.append("svg:g")
+    .attr("id", "cells");
+
+var circles = svg.append("svg:g")
+    .attr("id", "circles");	
+
+/*d3.select("input[type=checkbox]").on("change", function() {
+  cells.classed("voronoi", this.checked);
+});*/
+
+d3.json("data/map/us-can-states.json", function(collection) {
+//d3.json("data/map/us_canada.json", function(collection) {
+  states.selectAll("path")
+      .data(collection.features)
+    .enter().append("svg:path")
+      .attr("d", path);
+});
+
+var groupBubbleChart;
+var actionTable
+
+/*********1. Extensions***********/
+
+var cextensions = function(file) {
+d3.selectAll("circle").remove();
+d3.selectAll("path.arc").remove();
+d3.selectAll("#nodetext").style("visibility", "hidden");
+d3.selectAll('.select').remove();
+d3.selectAll("#fLabel").remove();
+//d3.selectAll('#yearly-bubble-chart').remove();
+//d3.selectAll('.dc-data-table').remove();
+//roupBubbleChart = dc.bubbleChart('#yearly-bubble-chart');
+//actionTable = dc.dataTable('.dc-data-table');
+//d3.selectAll("path").remove();
+d3.csv("data/map/"+file+"/client-extensions.csv", function(extensions) {
+
+  var linksByOrigin = {},
+      countByClient = {},
+      locationByClient = {},
+      positions = [];
+
+  var arc = d3.geo.greatArc()
+      .source(function(d) { return locationByClient[d.source]; })
+      .target(function(d) { return locationByClient[d.target]; });
+
+  extensions.forEach(function(extension) {
+    var origin = extension.origin,
+        destination = extension.destination,
+		nr = extension.nr,
+        links = linksByOrigin[origin] || (linksByOrigin[origin] = []);
+    links.push({source: origin, target: destination, order: nr});
+    countByClient[origin] = (countByClient[origin] || 0) + 1;
+    countByClient[destination] = (countByClient[destination] || 0) + 1;
+  });
+  
+
+
+  d3.csv("data/map/clients.csv", function(clients) {
+
+    // Only consider clients with at least one extension.
+    clients = clients.filter(function(client) {
+      if (countByClient[client.iata]) {
+        var location = [+client.longitude, +client.latitude];
+        locationByClient[client.iata] = location;
+        positions.push(projection(location));
+        return true;
+      }
+    });
+
+    // Compute the Voronoi diagram of clients' projected positions.
+    var polygons = d3.geom.voronoi(positions);
+
+    var g = cells.selectAll("g")
+        .data(clients)
+      .enter().append("svg:g")
+	  //.on("click", function(d,i) {d3.select(this).attr("display", "inline");})
+	  ;	
+	//recommendations("data/map/Client30");
+
+    g.append("svg:path")
+        .attr("class", "cell")
+        .attr("d", function(d, i) { 
+		return "M" + polygons[i].join("L") + "Z"; })
+        //.on("mouseover", function(d, i) { d3.select("#footer span").text(d.name); })	
+		;
+
+    g.selectAll("path.arc")
+        .data(function(d) { return linksByOrigin[d.iata] || []; })
+      .enter().append("svg:path")
+        .attr("class", "arc")
+        .attr("d", function(d) { return path(arc(d)); });
+
+    circles.selectAll("circle2")
+        .data(clients)
+      .enter().append("svg:circle")
+	  .attr("id", "circle2")
+        .attr("cx", function(d, i) { return positions[i][0]; })
+        .attr("cy", function(d, i) { return positions[i][1]; })
+        //.attr("r", function(d, i) { return Math.sqrt(countByClient[d.iata]); })
+		.attr("r", function(d, i) { return countByClient[d.iata]; })
+		.attr("text", function(d) {return d.name;} )
+        .sort(function(a, b) { return countByClient[b.iata] - countByClient[a.iata]; })
+		.on("click", function(d,i) {
+		  d3.selectAll("#circle2").style("fill", "steelblue");
+		  d3.selectAll("#nodetext").style("visibility", "hidden");
+		  d3.selectAll("#nodetext").text(function(d) { return d.name })
+		  d3.select(this).style("fill", "rgb(153,0,0)");
+		  //d3.select("#footer span").text(d.name);
+		  //d3.select(this).style("visibility", "visible");
+		  var linksN = linksByOrigin[d.iata];
+		  var linksLen = linksByOrigin[d.iata].length;
+		  var curr = d.iata;
+		  d3.selectAll("#circle2").each( function(d, i){
+			for (j=1; j<linksLen; j++){
+				if (linksN[j].target == d.name){
+				d3.select(this).style("fill", function(d) { return colorScale1(linksN[j].order)});
+				//d3.select(this).style("fill", "tomato"); 
+				}
+			}
+			
+			})
+			
+			d3.selectAll("#nodetext").each( function(d, i){
+			if (curr == d.name){
+				//d3.select(this).style("visibility", "visible"); 
+				}
+			for (j=1; j<linksLen; j++){
+				if (linksN[j].target == d.name){
+				d3.select(this).style("visibility", "visible"); 
+				//d3.select(this).text(d.name + " ("+linksN[j].order+")"); 
+				d3.select(this).text("("+linksN[j].order+")");
+				}
+			}
+			
+			})
+		  loadMetaActions(d.name, file);
+          recommendations(d.name, file);
+        })
+		;
+
+	g.append("svg:text")
+	.attr("class", "nodetext")
+	.attr("id", "nodetext")
+	.attr("dx", function(d, i) { return positions[i][0] - countByClient[d.iata]; })
+	.attr("dy", function(d, i) { return positions[i][1] - countByClient[d.iata]; })
+	.style("visibility", "hidden")//to hide
+	.text(function(d) { return d.name })
+	.on("click", function(d) {
+		  //d3.select(this).style("fill", "red")
+		  loadMetaActions(d.name, file);
+          recommendations(d.name, file);
+        })
+		;
+	;
+  });
+});
+
+}
+/*********Extensions***********/
+cextensions("Service2015");
+
+/*********2.Meta Actions***********/
+var loadMetaActions = function(client, survey) {
+if((client == 'Client1')|| (client == 'Client2')|| (client == 'Client3')|| (client == 'Client4')
+|| (client == 'Client5') || (client == 'Client6')|| (client == 'Client7') || (client == 'Client8') || (client == 'Client9') || (client == 'Client10') || (client == 'Client11')|| 
+(client == 'Client12') || (client == 'Client13')|| (client == 'Client14') || (client == 'Client15')|| (client == 'Client16') || (client == 'Client17')|| 
+(client == 'Client18')|| (client == 'Client19')|| (client == 'Client20')||
+(client == 'Client21')|| (client == 'Client22')|| (client == 'Client23')|| (client == 'Client24')|| (client == 'Client25')
+|| (client == 'Client26')|| (client == 'Client27')|| (client == 'Client28')|| (client == 'Client29')|| (client == 'Client30')
+|| (client == 'Client31')|| (client == 'Client32')|| (client == 'Client33')|| (client == 'Client34')|| (client == 'Client35')|| (client == 'Client36')|| (client == 'Client37')||(client == 'Client38')
+)
+
+
+{
+
+		d3.selectAll('.select').remove();
+		d3.selectAll("#fLabel").remove();
+		
+		d3.csv('data/meta/'+survey+'/'+client+'.csv', function (data) {
+		var metaActions = [];
+		var feasibilities = [];
+		//var data1 = data.meta_action;
+		data.forEach(function(d) {
+		var current = d.meta_action;
+		//console.log(current);
+		metaActions.push(current);
+		feasibilities.push(5);
+		//d.meta_action = d.meta_action;
+		});
+		var data1 = metaActions;
+			nrMa = data1.length;
+			
+		for (i in data1){
+		
+		 //console.log(i);
+
+		var data2 = [10,9,8,7,6,5,4,3,2,1,0];
+
+		var someText = d3.select('#feasibility')
+		  .append('text')
+		  .attr("id","fLabel")
+		  .text(data1[i])
+
+		var select2 = d3.select('#feasibility')
+		  .append('select')
+		  .attr("id", i)
+		  .attr("width","70%")
+			.attr('class','select')
+			.on('change',onchange)
+			
+		var options2 = select2
+		  .selectAll('option')
+			.data(data2).enter()
+			.append('option')
+			.property("selected", function(d){
+				return d == "5";}) 
+				.text(function (d) { return d; });
+
+		function onchange() {
+			selectValue = d3.select(this).property('value')
+			var id = d3.select(this).property('id')
+			var previous = feasibilities[id];
+			feasibilities[id] = +selectValue;
+			var current = feasibilities[id];
+			//console.log(feasibilities);
+			recommendations(client, survey, feasibilities, metaActions);
+			d3.select('body')
+				.append('p')
+				//.text(selectValue + ' is the last selected option. For i='+i)
+		};
+		}
+		
+		});
+		}
+}
+/*********2.Meta Actions***********/
+
+/*********3.Recommendations***********/
+var recommendations = function(client, survey, feasibilities, metaActions) {
+
+
+if((client == 'Client1')|| (client == 'Client2')|| (client == 'Client3')|| (client == 'Client4')
+|| (client == 'Client5') || (client == 'Client6')|| (client == 'Client7') || (client == 'Client8') || (client == 'Client9')|| (client == 'Client10') || (client == 'Client11')|| 
+(client == 'Client12') || (client == 'Client13')|| (client == 'Client14') || (client == 'Client15')|| (client == 'Client16') || (client == 'Client17')|| 
+(client == 'Client18')|| (client == 'Client19')|| (client == 'Client20')||
+ (client == 'Client21')|| (client == 'Client22')|| (client == 'Client23')|| (client == 'Client24')|| (client == 'Client25')
+|| (client == 'Client26')|| (client == 'Client27')|| (client == 'Client28')|| (client == 'Client29')|| (client == 'Client30')
+|| (client == 'Client31')|| (client == 'Client32')|| (client == 'Client33')|| (client == 'Client34')|| (client == 'Client35')|| (client == 'Client36')|| (client == 'Client37')|| (client == 'Client38')
+)
+
+
+{
+	var isMarked = false;
+
+groupBubbleChart = dc.bubbleChart('#yearly-bubble-chart');
+actionTable = dc.dataTable('.dc-data-table');
+
+d3.csv('data/map/'+survey+'/'+client+'actions.csv', function (data) {
+	var isMarked = false;
+    var numberFormat = d3.format('.2f');
+	var ids = [];
+	var count = 0;
+	
+    data.forEach(function (d) {
+		d.id = d.id;
+		d.size = +d.size;
+		d.impact = +d.impact;
+		d.feasibility = +d.feasibility;
+		//metaActions.forEach(function(e){
+		 //if metaActions
+		//});
+		for (e in metaActions){
+		 if (metaActions[e] == d.actions){
+			d.feasibility = feasibilities[e]
+			if (d.feasibility == 0){
+				ids.push(d.id);
+			}
+			}
+		}
+		//console.log(d.feasibility);
+		//d.attractiveness = d.impact * d.feasibility;
+		d.actions = d.actions;
+		d.positive = d.positive;
+		d.negative = d.negative;
+		//console.log(d.actions);
+		//console.log(d.positive);
+		
+		//count++;
+    });
+	
+	data.forEach(function (d) {
+	if (ids.indexOf(d.id) == -1){
+				count++;
+			}
+	});
+	//console.log("Count is"+ count);
+
+    var ndx = crossfilter(data);
+    var all = ndx.groupAll();
+	
+	//console.log(ids);
+	//  Dimension by actions group
+    var groupDimension = ndx.dimension(function (d) {
+	//console.log(ids.indexOf(d.id) == -1)
+		//isMarked = "true";
+		//for (e in ids){
+			//if(ids[e] == d.id){
+			//return null;}
+			//return d.id;
+			//}
+		//if (ids.indexOf(d.id) == -1){
+		//isMarked = "true";
+		return d.id;
+		//}
+		//if (ids.indexOf(d.id) != -1){
+		//isMarked = "true";
+		//return null;
+		//}
+		
+    });
+	/*
+	var groupDimension2 = ndx.dimension(function (d) {
+		//for (e in ids){
+			//if(ids[e] == d.id){
+			//return null;}
+			//}
+		if (ids.indexOf(d.id) == -1){
+		return d.id;}
+    });
+	*/
+	
+	
+	//groupDimension.filterFunction(function(d) { return (ids.indexOf(d.id) != -1); });
+    var actionGroup = groupDimension.group().reduce(
+	
+        function (p, v) {
+		if (ids.indexOf(p.id) == -1){
+            ++p.count;
+			//p.multi = p.multi*v.feasibility;
+			p.impact = Math.max(v.impact);
+			p.size = Math.max(v.size);
+			if(v.feasibility != 0){
+			p.feasibility -= 20/v.feasibility
+			};
+			
+			if(p.feasibility < 1){
+		p.feasibility =1};
+			
+			p.attractiveness = p.impact * p.feasibility;
+            return p;
+			}
+        },
+
+       function (p, v) {
+            --p.count;
+			p.impact = Math.max(v.impact);
+			p.size = Math.max(v.size);
+			if(v.feasibility != 0){
+			p.feasibility -= 20/v.feasibility};
+			//p.feasibility += 20/v.feasibility;
+			if(p.feasibility < 1){
+			p.feasibility =1
+			};
+			p.attractiveness = p.impact * p.feasibility;
+            return p;
+        },
+        /* initialize p */
+        function () {
+            return {
+                impact: 0,
+                size: 0,
+                feasibility: 100,
+                attractiveness: 0,
+            };
+        }
+    );
+
+    groupBubbleChart 
+        .width(990)
+        .height(250)
+        .transitionDuration(1500)
+        .margins({top: 10, right: 50, bottom: 30, left: 40})
+        .dimension(groupDimension)
+        .group(actionGroup)
+        .colors(colorbrewer.RdYlGn[9])
+        .colorDomain([0, 100*d3.max(data.filter(function(d){return (ids.indexOf(d.id) == -1)}), function (p) { return p.impact; })])
+        .colorAccessor(function (d) {
+            return d.value.attractiveness;
+        })
+        .keyAccessor(function (p) {
+            return p.value.attractiveness;
+        })
+        .valueAccessor(function (p) {
+            return p.value.impact;
+        })
+        .radiusValueAccessor(function (p) {
+            return 5*p.value.size;
+        })
+        .maxBubbleRelativeSize(0.02)
+        .x(d3.scale.linear().domain([0, 200]))
+        .y(d3.scale.linear().domain([0, 2]))
+        .r(d3.scale.linear().domain([0, 20]))
+
+        .elasticY(true)
+        .elasticX(true)
+
+        .yAxisPadding(0.5)
+        .xAxisPadding(5)
+
+        .renderHorizontalGridLines(true)
+
+        .renderVerticalGridLines(true)
+
+        .xAxisLabel('less \u00A0 \u00A0 \u00A0 \u00A0 <-\u00A0 \u00A0 \u00A0 \u00A0 \u00A0 \u00A0 \u00A0 \u00A0  \u00A0 \u00A0 Attractiveness \u00A0 \u00A0 \u00A0 \u00A0 \u00A0 \u00A0 \u00A0 \u00A0 \u00A0 \u00A0-> \u00A0 \u00A0 \u00A0 \u00A0 more ')
+
+        .yAxisLabel('NPS Impact')
+        .renderLabel(true)
+        .label(function (p) {
+            return p.key;
+        })
+
+        .renderTitle(true)
+        .title(function (p) {
+            return [
+                p.key,
+                'Attractiveness: ' + numberFormat(p.value.attractiveness),
+                'NPS Impact: ' + numberFormat(p.value.impact) + '%',
+                'Nr of Actions: ' + p.value.size
+            ].join('\n');
+        })
+
+        .yAxis().tickFormat(function (v) {
+            return v + '%';
+        });
+		
+
+//isMarked = false;
+groupBubbleChart.on('filtered.monitor', function(groupBubbleChart, filter) {
+	//console.log("Filter: "+filter);
+	filter==null ? isMarked = false : isMarked = true;
+	//console.log("isMarked: "+isMarked);
+    //isMarked = true;
+});	
+
+
+    //#### Data Table
+    actionTable 
+        .dimension(groupDimension)
+
+        .group(function (d) {
+		if (ids.indexOf(d.id) == -1){
+		//isMarked = "true";
+			return d.id;}
+        })
+        .size(800)
+		
+        .columns([
+
+		
+		{
+			label: 'Action Areas',
+			format: function (d) { if (ids.indexOf(d.id) == -1){
+			return d.actions;}}
+		}
+		,
+		{
+			label: 'Positive Comments',
+			format: function (d) { if (isMarked) return d.positive }
+		}
+		,
+		{
+			label: 'Negative Comments',
+			format: function (d) { if (isMarked) return d.negative }
+		}
+			
+        ])
+        .sortBy(function (d) {
+            return d.id;
+        })
+		
+        .order(d3.ascending)
+
+        .on('renderlet', function (table) {
+            table.selectAll('.dc-table-group').classed('info', true);
+        });
+
+
+    //#### Rendering
+	var filterDimension = ndx.dimension(function (d) { return d.id; });
+	filterDimension.filterFunction(function(d) { return (ids.indexOf(d) == -1) ; });
+    dc.renderAll();
+	
+});
+
+function sortNumber(a,b) {
+    return a - b;
+}
+
+
+//#### Versions
+
+//Determine the current version of dc with `dc.version`
+d3.selectAll('#version').text(dc.version);
+
+// Determine latest stable version in the repo via Github API
+d3.json('https://api.github.com/repos/dc-js/dc.js/releases/latest', function (error, latestRelease) {
+    /*jshint camelcase: false */
+    d3.selectAll('#latest').text(latestRelease.tag_name); /* jscs:disable */
+});
+}
+}
+
+    var _gaq = _gaq || [];
+    _gaq.push(['_setAccount', 'UA-33628816-1']);
+    _gaq.push(['_trackPageview']);
+    (function () {
+        var ga = document.createElement('script');
+        ga.type = 'text/javascript';
+        ga.async = true;
+        ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+        var s = document.getElementsByTagName('script')[0];
+        s.parentNode.insertBefore(ga, s);
+    })();
+    </script>
+	
+<h2>2. Rate Feasibility of Improvements</h2>
+<p style="margin-left:4em;">Rate the feasibility of improving your company's performance in each area below, from 0 (not possible) to 10 (easy).</p>
+<div class="container">
+
+<!--<h2>Recommended focus areas</h2>-->
+
+<div class="row">
+<!--<p>Assign feasibility<p>-->
+<div id="feasibility" class="feasibility">
+</div>
+</div>
+</div>
+<h2>3. View Your Recommended Improvement Options</h2>
+<p style="margin-left:4em;">Review improvement options below. Click on a bubble to review details and customer comments</p>
+<div class="container">
+<div class="row">
+	
+    <div id="yearly-bubble-chart" class="dc-chart">
+        <strong>Options Attractiveness</strong> (bubble size: number of action areas, color scale: green=attractive/red=not-attractive)
+        <a class="reset" href="javascript:groupBubbleChart.filterAll();dc.redrawAll();"
+           style="display: none;">reset</a>
+
+        <div class="clearfix"></div>
+    </div>
+</div>
+
+
+<div class="row">
+    <div>
+        <div class="dc-data-count">
+            <a
+                href="javascript:dc.filterAll(); dc.renderAll();">Reset All</a>
+        </div>
+    </div>
+    <table class="table table-hover dc-data-table">
+    </table>
+</div>
+
+<div class="clearfix"></div>
+
+
+</div>
+<!--<img style="position: absolute; top: 0; right: 0; border: 0;"
+                                                  src="ribbon.png"
+                                                  alt="Prototype">-->
+
+
+
+</body>
+</html>

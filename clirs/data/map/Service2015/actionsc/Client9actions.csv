@@ -1,0 +1,156 @@
+id,size,actions,impact,feasibility,attractiveness
+0,1,improve price competitiveness,0.316706255,5,30.40380048
+1,2,ensure service done correctly,0.12956165,5,11.91967178
+1,2,improve technician's knowledge,0.12956165,5,11.91967178
+2,3,ensure service done correctly,1.048009789,5,92.22486144
+2,3,improve proactive communication,1.048009789,5,92.22486144
+2,3,improve technician's knowledge,1.048009789,5,92.22486144
+3,4,ensure service done correctly,1.206362917,5,101.334485
+3,4,improve proactive communication,1.206362917,5,101.334485
+3,4,staff show care and respect to customers,1.206362917,5,101.334485
+3,4,improve technician's knowledge,1.206362917,5,101.334485
+4,4,ensure service done correctly,1.127186353,5,94.68365364
+4,4,improve proactive communication,1.127186353,5,94.68365364
+4,4,improve technician's knowledge,1.127186353,5,94.68365364
+4,4,improve price competitiveness,1.127186353,5,94.68365364
+5,4,ensure service done correctly,1.115762869,5,93.72408096
+5,4,improve proactive communication,1.115762869,5,93.72408096
+5,4,improve technician's knowledge,1.115762869,5,93.72408096
+5,4,show care and respect from technician,1.115762869,5,93.72408096
+6,5,ensure service done correctly,1.631037213,5,130.482977
+6,5,improve proactive communication,1.631037213,5,130.482977
+6,5,staff show care and respect to customers,1.631037213,5,130.482977
+6,5,improve technician's knowledge,1.631037213,5,130.482977
+6,5,show care and respect from technician,1.631037213,5,130.482977
+7,5,ensure service done correctly,1.53746491,5,122.9971928
+7,5,improve proactive communication,1.53746491,5,122.9971928
+7,5,improve technician's knowledge,1.53746491,5,122.9971928
+7,5,more timely invoicing,1.53746491,5,122.9971928
+7,5,improve price competitiveness,1.53746491,5,122.9971928
+8,5,ensure service done correctly,1.382084037,5,110.566723
+8,5,improve proactive communication,1.382084037,5,110.566723
+8,5,improve technician's knowledge,1.382084037,5,110.566723
+8,5,show care and respect from technician,1.382084037,5,110.566723
+8,5,improve staff's knowledge,1.382084037,5,110.566723
+9,5,ensure service done correctly,1.28553948,5,102.8431584
+9,5,improve proactive communication,1.28553948,5,102.8431584
+9,5,staff show care and respect to customers,1.28553948,5,102.8431584
+9,5,improve technician's knowledge,1.28553948,5,102.8431584
+9,5,improve staff's knowledge,1.28553948,5,102.8431584
+10,5,ensure service done correctly,1.28553948,5,102.8431584
+10,5,improve proactive communication,1.28553948,5,102.8431584
+10,5, improve technician's knowledge,1.28553948,5,102.8431584
+10,5,show care and respect from technician,1.28553948,5,102.8431584
+10,5,improve price competitiveness,1.28553948,5,102.8431584
+11,6,ensure service done correctly,3.272035803,5,248.674721
+11,6,improve proactive communication,3.272035803,5,248.674721
+11,6,staff show care and respect to customers,3.272035803,5,248.674721
+11,6,improve technician's knowledge,3.272035803,5,248.674721
+11,6,show care and respect from technician,3.272035803,5,248.674721
+11,6,improve staff's knowledge,3.272035803,5,248.674721
+12,6,ensure service done correctly,3.119556611,5,237.0863025
+12,6,improve proactive communication,3.119556611,5,237.0863025
+12,6,staff show care and respect to customers,3.119556611,5,237.0863025
+12,6,improve technician's knowledge,3.119556611,5,237.0863025
+12,6,show care and respect from technician,3.119556611,5,237.0863025
+12,6,improve price competitiveness,3.119556611,5,237.0863025
+13,6,ensure service done correctly,2.177355503,5,165.4790182
+13,6,improve proactive communication,2.177355503,5,165.4790182
+13,6,staff show care and respect to customers,2.177355503,5,165.4790182
+13,6,improve technician's knowledge,2.177355503,5,165.4790182
+13,6,show care and respect from technician,2.177355503,5,165.4790182
+13,6,decrease dealer response time,2.177355503,5,165.4790182
+14,6,ensure service done correctly,1.947743468,5,148.0285036
+14,6,improve proactive communication,1.947743468,5,148.0285036
+14,6,staff show care and respect to customers,1.947743468,5,148.0285036
+14,6,improve technician's knowledge,1.947743468,5,148.0285036
+14,6,show care and respect from technician,1.947743468,5,148.0285036
+14,6,more timely invoicing,1.947743468,5,148.0285036
+15,6,ensure service done correctly,1.773555028,5,134.7901821
+15,6,improve proactive communication,1.773555028,5,134.7901821
+15,6,improve technician's knowledge,1.773555028,5,134.7901821
+15,6,show care and respect from technician,1.773555028,5,134.7901821
+15,6,improve staff's knowledge,1.773555028,5,134.7901821
+15,6,improve price competitiveness,1.773555028,5,134.7901821
+16,6,ensure service done correctly,1.28553948,5,97.7010005
+16,6,improve proactive communication,1.28553948,5,97.7010005
+16,6,staff show care and respect to customers,1.28553948,5,97.7010005
+16,6,improve technician's knowledge,1.28553948,5,97.7010005
+16,6,improve staff's knowledge,1.28553948,5,97.7010005
+16,6,improve price competitiveness,1.28553948,5,97.7010005
+17,7,ensure service done correctly,9.977347607,5,718.3690277
+17,7,improve proactive communication,9.977347607,5,718.3690277
+17,7,staff show care and respect to customers,9.977347607,5,718.3690277
+17,7,improve technician's knowledge,9.977347607,5,718.3690277
+17,7,show care and respect from technician,9.977347607,5,718.3690277
+17,7,improve staff's knowledge,9.977347607,5,718.3690277
+17,7,improve price competitiveness,9.977347607,5,718.3690277
+18,7,ensure service done correctly,4.481393508,5,322.6603325
+18,7,improve proactive communication,4.481393508,5,322.6603325
+18,7,staff show care and respect to customers,4.481393508,5,322.6603325
+18,7,improve technician's knowledge,4.481393508,5,322.6603325
+18,7,show care and respect from technician,4.481393508,5,322.6603325
+18,7,more timely invoicing,4.481393508,5,322.6603325
+18,7,improve price competitiveness,4.481393508,5,322.6603325
+19,7,ensure service done correctly,4.301331132,5,309.6958415
+19,7,improve proactive communication,4.301331132,5,309.6958415
+19,7,staff show care and respect to customers,4.301331132,5,309.6958415
+19,7,improve technician's knowledge,4.301331132,5,309.6958415
+19,7,show care and respect from technician,4.301331132,5,309.6958415
+19,7,improve staff's knowledge,4.301331132,5,309.6958415
+19,7,more timely invoicing,4.301331132,5,309.6958415
+20,7,ensure service done correctly,4.14885194,5,298.7173397
+20,7,improve proactive communication,4.14885194,5,298.7173397
+20,7,staff show care and respect to customers,4.14885194,5,298.7173397
+20,7,improve technician's knowledge,4.14885194,5,298.7173397
+20,7,show care and respect from technician,4.14885194,5,298.7173397
+20,7,decrease dealer response time,4.14885194,5,298.7173397
+20,7,improve price competitiveness,4.14885194,5,298.7173397
+21,7,ensure service done correctly,3.906956438,5,281.3008635
+21,7,improve proactive communication,3.906956438,5,281.3008635
+21,7,staff show care and respect to customers,3.906956438,5,281.3008635
+21,7,improve technician's knowledge,3.906956438,5,281.3008635
+21,7,show care and respect from technician,3.906956438,5,281.3008635
+21,7,decrease dealer response time,3.906956438,5,281.3008635
+21,7,improve staff's knowledge,3.906956438,5,281.3008635
+22,8,ensure service done correctly,12.20569003,5,829.9869224
+22,8,improve proactive communication,12.20569003,5,829.9869224
+22,8,staff show care and respect to customers,12.20569003,5,829.9869224
+22,8,improve technician's knowledge,12.20569003,5,829.9869224
+22,8,show care and respect from technician,12.20569003,5,829.9869224
+22,8,improve staff's knowledge,12.20569003,5,829.9869224
+22,8,more timely invoicing,12.20569003,5,829.9869224
+22,8,improve price competitiveness,12.20569003,5,829.9869224
+23,8,ensure service done correctly,10.54073723,5,716.7701318
+23,8,improve proactive communication,10.54073723,5,716.7701318
+23,8,staff show care and respect to customers,10.54073723,5,716.7701318
+23,8,improve technician's knowledge,10.54073723,5,716.7701318
+23,8,show care and respect from technician,10.54073723,5,716.7701318
+23,8,decrease dealer response time,10.54073723,5,716.7701318
+23,8,improve staff's knowledge,10.54073723,5,716.7701318
+23,8,improve price competitiveness,10.54073723,5,716.7701318
+24,8,ensure service done correctly,5.5898654,5,380.1108472
+24,8,improve proactive communication,5.5898654,5,380.1108472
+24,8,staff show care and respect to customers,5.5898654,5,380.1108472
+24,8,improve technician's knowledge,5.5898654,5,380.1108472
+24,8,show care and respect from technician,5.5898654,5,380.1108472
+24,8,decrease dealer response time,5.5898654,5,380.1108472
+24,8,more timely invoicing,5.5898654,5,380.1108472
+24,8,improve price competitiveness,5.5898654,5,380.1108472
+25,8,ensure service done correctly,4.698722075,5,319.5131011
+25,8,improve proactive communication,4.698722075,5,319.5131011
+25,8,show care and respect to customers,4.698722075,5,319.5131011
+25,8,improve technician's knowledge,4.698722075,5,319.5131011
+25,8,show care and respect from technician,4.698722075,5,319.5131011
+25,8,decrease dealer response time,4.698722075,5,319.5131011
+25,8,improve staff's knowledge,4.698722075,5,319.5131011
+25,8,more timely invoicing,4.698722075,5,319.5131011
+26,9,ensure service done correctly,12.62881283,5,808.2440214
+26,9,improve proactive communication,12.62881283,5,808.2440214
+26,9,staff show care and respect to customers,12.62881283,5,808.2440214
+26,9,improve technician's knowledge,12.62881283,5,808.2440214
+26,9,show care and respect from technician,12.62881283,5,808.2440214
+26,9,decrease dealer response time,12.62881283,5,808.2440214
+26,9,improve staff's knowledge,12.62881283,5,808.2440214
+26,9,more timely invoicing,12.62881283,5,808.2440214
+26,9,improve price competitiveness,12.62881283,5,808.2440214

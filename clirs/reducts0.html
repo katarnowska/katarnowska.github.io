@@ -1,0 +1,2067 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<title>Recommender System for Improving Net Promoter Score - Algorithm</title>
+<html>
+  <head>
+    <style>
+	.node circle {
+	fill: #fff;
+	stroke: steelblue;
+	stroke-width: 1.5px;
+	}
+
+	.node {
+	font: 12px sans-serif;
+	}
+
+	.link {
+	fill: none;
+	stroke: #ccc;
+	stroke-width: 1.5px;
+	}
+	
+    rect.bordered {
+    stroke: #E6E6E6;
+    stroke-width:2px;   
+    }
+	
+    text.mono {
+    font-size: 9pt;
+    font-family: Consolas, courier;
+    fill: #aaa;
+    }
+    text.axis-year {
+    fill: #000;
+    }
+    text.axis-important {
+    fill: #000;
+    }
+	  
+	.chart rect {
+	fill: maroon;
+	}
+	.container1 {
+	float: left;
+	}
+	.container2 {
+	float: left;
+	}
+	.container3 {
+	float: left,top;
+	}
+	.picker1 {
+	float: bottom;
+	}
+	.picker2 {
+	float: top;
+	}
+	.container4 {
+	float: left;
+	}
+	.container5 {
+	float: left,top;
+	}
+	
+	.axis path, .axis line {
+    fill: none;
+    stroke: black;
+    shape-rendering: crispEdges;
+	}
+	.axis text {
+		font-family: sans-serif;
+		font-size: 11px;
+	}
+	#tooltip {
+		position: absolute;
+		text-align: center;
+		width: 40px;
+		height: auto;
+		padding: 10px;
+		background-color: white;
+		-webkit-border-radius: 10px;
+		-moz-border-radius: 10px;
+		border-radius: 10px;
+		-webkit-box-shadow: 4px 4px 10px rgba(0, 0, 0, 0.4);
+		-moz-box-shadow: 4px 4px 10px rgba(0, 0, 0, 0.4);
+		box-shadow: 4px 4px 10px rgba(0, 0, 0, 0.4);
+		pointer-events: none;
+	}
+	#tooltip.hidden {
+		display: none;
+	}
+	#tooltip p {
+		margin: 0;
+		font-family: sans-serif;
+		font-size: 16px;
+		line-height: 20px;
+	}
+	#accbar:hover {  fill:blue; }
+	#covbar:hover {  fill:rgb(253,174,97); }
+	
+	#chart4 {
+	font: 12px sans-serif;
+	opacity: 0;
+	}
+	
+	#chart5 {
+	opacity: 0;
+	}
+	
+	#dataset-picker0 {
+	opacity: 0;
+	}
+	
+	#dendogram {
+	opacity: 0;
+	}
+	
+	#DendrogramTitle {
+	opacity: 0;
+	}
+	
+	#description {
+	opacity: 0;
+	}
+	.y.axisRight text {
+    fill: orange;
+	}
+	.y.axisLeft text {
+    fill: steelblue;
+	}
+	.axis path,
+	.axis line {
+	fill: none;
+	stroke: #000;
+	shape-rendering: crispEdges;
+	}
+	.bar1 {
+	fill: steelblue;
+	}
+	.bar2 {
+	fill: orange;
+	}
+	.x.axis path {
+	display: none;
+}
+	  
+    </style>
+	<link rel="icon" type="image/x-icon" href="swallow.jpg"/>
+    <script src="http://d3js.org/d3.v3.js"></script>
+  </head>
+  <body>
+<h1><i>Customer Sentiment Analysis </i> Net Promoter Score</h1>
+<a href="nps.html">Show Recommendations</a>
+<br>
+
+<!--<p>Hierarchical Clustering of Clients based on semantic similarity. <br> Click on the client node to see their extensions (ordered) and explore underlying data.
+<!--<p>Use the buttons to choose a client and explore the data. 
+<p>Built with <a href="http://d3js.org/">d3.js</a>.-->
+<!--
+	<p>Legend:
+<table>
+  <tr>
+    <td>B1</td>
+    <td>Benchmark: All - Dealer Communication</td> 
+	<td>B9</td>
+    <td>Benchmark: Service - Repair Completed Correctly</td> 
+</tr>
+<tr>
+    <td>B2</td>
+    <td>Benchmark: All - Ease of Contact</td> 
+	<td>B10</td>
+    <td>Benchmark: Service - Repair Completed Timely</td> 
+</tr>
+<tr>
+    <td>B3</td>
+    <td>Benchmark: All - Invoice Clear and Understandable</td> 
+	<td>B11</td>
+    <td>Benchmark: Service - Technician Communication</td> 
+</tr>
+<tr>
+    <td>B4</td>
+    <td>Benchmark: All - Likelihood to be Repeat Customer</td> 
+	<td>B12</td>
+    <td>Benchmark: Service - Timeliness of Invoice</td>
+</tr>
+<tr>
+    <td>B5</td>
+    <td>Benchmark: All - Overall Satisfaction</td> 
+	<td>B13</td>
+    <td>Benchmark: Service-Repair Completed When Promised</td> 
+</tr>
+<tr>
+    <td>B6</td>
+    <td>Benchmark: Referral Behavior</td> 
+	<td>B14</td>
+    <td>Benchmark: Service-Tech Arrived When Promised</td> 
+</tr>
+<tr>
+    <td>B7</td>
+    <td>Benchmark: Service - Appointment Availability</td> 
+	<td>B15</td>
+    <td>Benchmark: Service-Tech Equipped to do Job</td> 
+</tr>
+<tr>
+    <td>B8</td>
+    <td>Benchmark: Service - Final Invoice Matched Expectation</td> 
+	<td>B16</td>
+    <td>Benchmark: Service-Tech Promised in Expected Timeframe</td>
+
+
+</table>
+-->
+<br>
+
+</aside>
+	<div>Select Client: 
+		<select id="select-list">
+		  <option value="All">All</option> 
+		  <option value="Client1">Client1</option> <option value="Client2">Client2</option><option value="Client3">Client3</option><option value="Client4">Client4</option>
+		  <option value="Client5">Client5</option><option value="Client6">Client6</option><option value="Client7">Client7</option><option value="Client8">Client8</option>
+		  <option value="Client9">Client9</option><option value="Client10">Client10</option><option value="Client11">Client11</option><option value="Client12">Client12</option>
+		  <option value="Client13">Client13</option><option value="Client14">Client14</option><option value="Client15">Client15</option><option value="Client16">Client16</option>
+		  <option value="Client17">Client17</option><option value="Client18">Client18</option><option value="Client19">Client19</option><option value="Client20">Client20</option>
+		  <option value="Client21">Client21</option><option value="Client22">Client22</option><option value="Client23">Client23</option><option value="Client24">Client24</option>
+		  <option value="Client25">Client25</option><option value="Client26">Client26</option><option value="Client27">Client27</option><option value="Client28">Client28</option>
+		  <option value="Client29">Client29</option><option value="Client30">Client30</option><option value="Client31">Client31</option><option value="Client32">Client32</option>
+		  <option value="Client33">Client33</option><option value="Client34">Client34</option><option value="Client35">Client35</option><option value="Client36">Client36</option>
+		   <option value="Client37">Client37</option><option value="Client38">Client38</option>
+		</select>
+		Select Category:
+		<select id="select-list2">
+		  <option value="service">Service</option> 
+		  <option value="shop">Service: Shop</option> 
+		  <option value="field">Service: Field</option> 
+		  <option value="parts">Parts</option> 
+		</select>
+		</div>	
+	
+    <div class="container1" id="chart1"></div>
+	<div class="container2" id="chart2"></div>
+	<div class="container3" id="chart3"></div>
+	<div id="tooltip" class="hidden"><p><span id="value">100</span></p></div>
+	<div id="option"><input name="showButton" type="button" value="Show details" onclick="showMore()" /><input name="hideButton" type="button" value="Hide details" onclick="hideMore()" /></div>
+	<div class="container4" id="chart4"></div>
+	<div class="container5" id="chart5"></div>
+	<!--<div class="picker1" id="dataset-picker1"></div>
+	<div class="picker2" id="dataset-picker2"></div>-->
+	<div id="DendrogramTitle">
+	<h3><i>Semantic similarity </i> Hierarchical Clustering of Clients</h3></div>
+	<!--<p>Hierarchical Clustering of Clients based on semantic similarity. 
+	<br> Click on the client node to see their extensions (ordered) and explore underlying data.-->
+	<div class="picker0" id="dataset-picker0"></div>
+	<div class="container0" id="dendogram"></div>
+	
+    
+	  
+<script type="text/javascript">
+datasets = ["All", "Client1","Client2","Client3","Client4","Client5", "Client6", "Client7","Client8", "Client9", "Client10", "Client11", "Client12", "Client13", "Client14", "Client15", "Client16", 
+		  "Client17", "Client18", "Client19", "Client20", "Client21", "Client22", "Client23", "Client24","Client25", "Client26", "Client27", "Client28", "Client29", "Client30", "Client31","Client32", "Client33", "Client34",
+		  "Client35","Client36","Client37","Client38"];
+var selectedClient = "All",
+	selectedSurvey = "service";
+	
+var showMore = function(){
+if(selectedSurvey == "service"){
+	d3.select("#chart4").style("opacity",1)
+	d3.select("#chart5").style("opacity",1)
+	d3.select("#dendogram").style("opacity",1)
+	d3.select("#dataset-picker0").style("opacity",1)
+	d3.select("#DendrogramTitle").style("opacity",1)
+	d3.select("#description").style("opacity",1)}
+				//.attr("display", "inline");
+}
+
+var hideMore = function(){
+d3.select("#chart4").style("opacity",0)
+d3.select("#chart5").style("opacity",0)
+d3.select("#dendogram").style("opacity",0)
+d3.select("#dataset-picker0").style("opacity",0)
+d3.select("#DendrogramTitle").style("opacity",0)
+d3.select("#description").style("opacity",0)
+				//.attr("display", "inline");
+}
+var alertChange = function() {
+    //get the data value and index from the event
+    selectedClient = d3.event.target.value;
+    var selectedIndex = d3.event.target.selectedIndex;
+    
+    //alert("You selected the option at index " + selectedIndex
+         // + ", with value attribute "
+         // + d);
+		  
+		  heatmapChart(selectedClient,selectedSurvey);	
+		  rowChart(selectedClient+"n",selectedSurvey);
+		  rowChartSt(selectedClient,selectedSurvey);
+		  barChart(selectedClient);
+		  confusionMatrix(selectedClient,2015);
+    
+    //if you need to access more complicated attributes 
+    //or data from the option element, you can use the index
+    //to select the individual element:
+    var selectedDOMElement =
+        d3.event.target.children[selectedIndex];
+    var selection = d3.select(selectedDOMElement);
+    
+    //alert("The text from that option was: " + selection.text());
+}
+
+//add this event listener to the first menu (as a whole):
+d3.select("#select-list").on("change", alertChange);	
+
+var alertChange2 = function() {
+    //get the data value and index from the event
+    selectedSurvey = d3.event.target.value;
+	  
+		heatmapChart(selectedClient,selectedSurvey);
+		rowChart(selectedClient+"n",selectedSurvey);
+		rowChartSt(selectedClient,selectedSurvey);		  
+}  
+d3.select("#select-list2").on("change", alertChange2);
+
+/*********Dendrogram***********/
+var years_d = ["2011-2012", "2013-2015", "2015"],	
+	datasetpicker0 = d3.select("#dataset-picker0").selectAll(".dataset-button0")
+        .data(years_d)
+	  
+      datasetpicker0.enter()
+        .append("input")
+        .attr("value", function(d){ return "" + d })
+        .attr("type", "button")
+        .attr("class", "dataset-button0")
+        .on("click", function(d) {
+          dendogram(d);
+        });	
+
+var dendogram = function(file) {
+d3.select("#dendogramChart").remove();
+
+var width = 1150,
+    height = 800;
+	
+var cluster = d3.layout.cluster()
+    .size([height, width - 160]);
+
+var diagonal = d3.svg.diagonal()
+    .projection(function(d) { return [d.y, d.x]; });
+
+var chart0 = d3.select("#dendogram").append("svg")
+	.attr("id", "dendogramChart")
+    .attr("width", width)
+    .attr("height", height)
+  .append("g")
+    .attr("transform", "translate(60,0)");
+	
+	d3.select("#current0").remove();
+		chart0.append("text")
+				.attr("id", "current")
+				.text("Time frame: "+file)
+				.attr("font-size", "20")
+				.attr("font-family", "Consolas, courier")
+				.attr("x", 0)
+				.attr("y", 0)
+				.attr("transform", "translate(10 , 40)");
+
+d3.json("data/dend/"+file+ ".json", function(error, root) {
+  if (error) throw error;
+	colors=["rgb(204,0,0)", "rgb(255,0,0)", "rgb(255,51,51)", "rgb(255,102,102)", "rgb(255,153,153)", "rgb(255,204,204)"]
+	var colorScale1 = d3.scale.quantile()
+              .domain([0, 7, 20])
+              .range(colors);
+  var nodes = cluster.nodes(root),
+      links = cluster.links(nodes);
+
+  var link = chart0.selectAll(".link")
+      .data(links)
+    .enter().append("path")
+      .attr("class", "link")
+      .attr("d", diagonal);
+
+  var node = chart0.selectAll(".node")
+      .data(nodes)
+    .enter().append("g")
+      .attr("class", "node")
+      .attr("transform", function(d) { return "translate(" + d.y + "," + d.x + ")"; })
+
+  node.append("circle")
+	  .attr("id", "node")
+      .attr("r", 6)
+	  .on("click", function(d) {
+	   d3.selectAll("#nodetext").text(function(d) { return d.name })
+	   var currClient = d.name;
+		d3.selectAll("#node").style("fill", "white");
+		
+			d3.csv("data/map/client-extensions"+file+".csv", function(extensions) {
+			  var linksByOrigin = {}
+
+			  extensions.forEach(function(extension) {
+				var origin = extension.origin,
+					destination = extension.destination,
+					nr = extension.nr,
+					links = linksByOrigin[origin] || (linksByOrigin[origin] = []);
+				links.push({source: origin, target: destination, order: nr});
+			  });
+			  
+			  var linksN = linksByOrigin[currClient];
+				  linksLen = linksByOrigin[currClient].length;
+			      curr = currClient;
+			d3.selectAll("#node").each( function(d, i){
+			for (j=1; j<linksLen; j++){
+				if (linksN[j].target == d.name){
+				d3.select(this).style("fill", function(d) { return colorScale1(linksN[j].order)});
+				}
+			}
+			
+			})
+			
+			d3.selectAll("#nodetext").each( function(d, i){
+			//if (curr == d.name){
+				//d3.select(this).style("visibility", "visible"); 
+				//}
+			for (j=1; j<linksLen; j++){
+				if (linksN[j].target == d.name){
+				//d3.select(this).style("visibility", "visible"); 
+				d3.select(this).text(d.name + " ("+linksN[j].order+")"); 
+				}
+			}
+			
+			})
+  
+		})
+	
+	   if (((d.name).match(/^Client.*$/)) || ((d.name).match(/^All.*$/)))
+		{ 
+		  d3.select(this).style("fill", "rgb(153,0,0)");
+          heatmapChart(d.name, selectedSurvey);	
+		  rowChart(d.name+"n", selectedSurvey);
+		  rowChartSt(d.name);
+		  barChart(d.name);
+		  confusionMatrix(d.name,2015);
+		  }
+        });
+
+  node.append("text")
+	  .attr("id", "nodetext")
+      .attr("dx", function(d) { return d.children ? -8 : 8; })
+      .attr("dy", 3)
+      .style("text-anchor", function(d) { return d.children ? "end" : "start"; })
+      .text(function(d) { return d.name; });
+	  /*.on("click", function(d) {
+	  
+	   if (((d.name).match(/^Client.*$/)) || ((d.name).match(/^All.*$/)))
+		{ 
+          heatmapChart(d.name);	
+		  rowChart(d.name+"n");
+		  rowChartSt(d.name);
+		  barChart(d.name);
+		  confusionMatrix(d.name,2015);
+		  }
+        });
+	 */
+});
+
+d3.select(self.frameElement).style("height", height + "px");
+}
+dendogram(years_d[2]);
+
+/*********Reducts***********/	
+var margin = { top: 60, right: 0, bottom: 50, left: 50 },
+          width = 820 - margin.left - margin.right,
+          height = 500 - margin.top - margin.bottom,
+          gridSize = Math.floor((width-60) / 16),
+          legendElementWidth = gridSize *1.5;
+		  buckets = 9,
+          years = ["2011", "2012", "2013", "2014", "2015"],
+          
+		  benchmarks = [{code:"B1", name: "All - Dealer Communication"},
+		  {code:"B2", name: "All - Ease of Contact"}, {code:"B3",name: "All - Invoice Clear and Understandable"}, {code:"B4",name: "	All - Likelihood to be Repeat Customer"}, {code:"B5",name: "All - Overall Satisfaction"}, 
+		  {code:"B6",name: "Referral Behavior"}, {code:"B7",name: "Service - Appointment Availability"}, {code:"B8",name: "Service - Final Invoice Matched Expectation"}, {code:"B9",name: "Service - Repair Completed Correctly"},
+		  {code:"B10",name: "Service - Repair Completed Timely"}, {code:"B11",name: "Service - Technician Communication"}, {code:"B12",name: "Service - Timeliness of Invoice"}, 
+		  {code:"B13",name: "Service-Repair Completed When Promised"}, {code:"B14",name: "Service-Tech Arrived When Promised"}, {code:"B15",name: "Service-Tech Equipped to do Job"}, 
+		  {code:"B16",name:  "Service-Tech Promised in Expected Timeframe"}];
+		  
+		  benchmarks_parts = [{code:"B1", name: "All - Dealer Communication"},
+		  {code:"B2", name: "All - Likelihood to be Repeat Customer"}, {code:"B3",name: "All - Overall Satisfaction"}, {code:"B4",name: "Parts - Ease of Completing Parts Order"}, {code:"B5",name: "Parts - Ease of Placing Parts Orders by Phone"}, 
+		  {code:"B6",name: "Parts - How Quickly Parts Orders are Filled"}, {code:"B7",name: "Parts - Parts Availability"}, {code:"B8",name: "Parts - Time it Took to Place Order"}, {code:"B9",name: "Parts-Ease of Use for Online Parts Store"},
+		  {code:"B10",name: "Parts-Explanation of Delivery Options Costs"}, {code:"B11",name: "Parts-How Orders Are Placed"}, {code:"B12",name: "Parts-Kept Informed of Order Status"}, 
+		  {code:"B13",name: "Parts-Knowledge and Helpfulness of Staff"}, {code:"B14",name: "Parts-Knowledge of Personnel"}, {code:"B15",name: "Parts-Order Accuracy"}, 
+		  {code:"B16",name:  "Parts-Prompt Notification of Back Orders"},{code:"B17",name:  "Referral Behavior"}];
+		  
+		  var svg = d3.select("#chart1").append("svg")
+          .attr("width", width + margin.left + margin.right)
+          .attr("height", height + margin.top + margin.bottom)
+          .append("g")
+		  .attr("transform", "translate(" + margin.left + ",220)");
+          //.attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+      
+
+      var heatmapChart = function(tsvFile, st) {
+	   
+      
+      var yearLabels = svg.selectAll(".yearLabel")
+          .data(years)
+          .enter().append("text")
+            .text(function (d) { return d; })
+            .attr("x", 0)
+            .attr("y", function (d, i) { return i * gridSize; })
+            .style("text-anchor", "end")
+            .attr("transform", "translate(-6," + gridSize / 1.5 + ")")
+            .attr("class", function (d, i) { return ((i >= 0 && i <= 4) ? "yearLabel mono axis axis-year" : "yearLabel mono axis"); });
+	  
+		svg.selectAll(".benchmarkLabel").remove();
+		svg.selectAll("g").remove();
+		svg.selectAll(".benchmark").remove();
+	  console.log("survey:"+st);
+	  var benchmarks_label;
+	  if (st === "parts") {
+	  console.log("parts detected");
+	  benchmarks_label=benchmarks_parts;
+	  }
+	  else {
+	  benchmarks_label=benchmarks
+	  }
+	  var benchmarkLabels = svg.selectAll(".benchmarkLabel")
+          //.data(function(d) { return (st == 'parts') ? benchmarks_parts : benchmarks; })
+		  .data(benchmarks_label)
+          .enter().append("svg:g")
+		  //.text(function(d) { return d.code; })
+			.attr("y", 0)
+			//.attr("x", function(d, i) { return i * gridSize; })
+			.attr("transform", "translate(" + gridSize / 2 + ", -10)")
+			//.attr("class", function(d, i) { return ((i >= 0 && i <= 17) ? "benchmarkLabel mono axis axis-important" : "benchmarkLabel mono axis"); });
+			//.attr("transform", function(d,i){
+				//var xText = i * gridSize;
+				//var yText = 0;
+				//return "translate(" + xText + "," + yText + ") rotate(-45)";
+				//})
+			
+			
+			
+			//.attr("transform", "translate(" + gridSize / 2 + ", -6) rotate(-10)")
+            
+			//.attr("transform", function(d, i) { return "rotate(-10)" })
+            //.attr("transform", "rotate(-10) translate(" + gridSize / 2 + ", -6) ")
+			//.attr("transform", "rotate(-10 "+ gridSize / 2 + ", -6)")
+           // .style("text-anchor", "middle")
+			//.attr("transform", "rotate(-45)")
+			
+        benchmarkLabels.append("text")
+			.text(function(d) { return d.name; })
+			.attr("font-size", "12px")
+			.attr("text-anchor", "begin")
+			.attr("transform", function(d,i) {return "translate(" + i * gridSize + ", 0) rotate(-70,0,0)"})
+			
+            
+			
+		benchmarkLabels.append("title");
+		benchmarkLabels.select("title").text(function(d) { return d.name; });
+	  
+	  var colors = ["#ffffd9","#edf8b1","#c7e9b4","#7fcdbb","#41b6c4","#1d91c0","#225ea8","#253494","#081d58"] // alternatively colorbrewer.YlGnBu[9]
+          //colors = colorbrewer.YlGnBu[4]		  
+        d3.tsv("data/ben/"+st+"/"+tsvFile+".txt",
+        function(d) {
+          return {
+            year: +d.year,
+            benchmark: +d.benchmark,
+            value: +d.value,
+			avg: +d.avg,
+          };
+        },
+        function(error, data) {
+		
+		svg.select("#current").remove();
+		svg.selectAll("#lines").remove();
+		svg.append("text")
+				.attr("id", "current")
+				.text("Reducts: "+tsvFile)
+				.attr("font-size", "20")
+				.attr("font-family", "Consolas, courier")
+				.attr("x", 0)
+				.attr("y", 0)
+				.attr("transform", "translate(-30 , -225)");
+				
+		
+          var colorScale = d3.scale.quantize()
+              .domain([0, d3.max(data, function (d) { return d.value; })])
+              .range(colors);
+			  
+		var dom = colorScale.domain(),
+			l = (dom[1] - dom[0])/colorScale.range().length,
+			breaks = d3.range(0, colorScale.range().length).map(function(i) { return i * l; });
+          var cards = svg.selectAll(".benchmark")
+              .data(data, function(d) {return d.year+':'+d.benchmark;});
+          cards.append("title");
+				  
+          cards.enter().append("rect")
+              .attr("x", function(d) { return (d.benchmark - 1) * gridSize; })
+              .attr("y", function(d) { return (d.year - 1) * gridSize; })
+              .attr("rx", 4)
+              .attr("ry", 4)
+              .attr("class", "benchmark bordered")
+              .attr("width", gridSize)
+              .attr("height", gridSize)
+              .style("fill", colors[0]);
+			  
+		if(st == "field") {
+		 var lines =  svg.selectAll(".benchmarkLines").data(data, function(d) {return d.year+':'+d.benchmark;})
+		 .enter().append("line") 
+		 .attr('id', 'lines')		
+			
+			
+			.filter(function(d) {
+				if (tsvFile == 'Client2'){
+					if ((d.year == "1")||(d.year == "2")) {return (d.benchmark == 3 || d.benchmark == 7|| d.benchmark == 10 || d.benchmark == 11)}
+					if ((d.year == "3")) {return (d.benchmark == 3 || d.benchmark == 10 || d.benchmark == 11)}
+					if ((d.year == "5")) {return (d.benchmark == 3 || d.benchmark == 6 || d.benchmark == 10 || d.benchmark == 12)}
+					}
+				if (tsvFile == 'Client3'){
+					if ((d.year == "5")) {return (d.benchmark == 3 || d.benchmark == 7 || d.benchmark == 10 || d.benchmark == 11 || d.benchmark == 12 || d.benchmark == 16)}
+					}
+				if (tsvFile == 'Client5'){
+					if ((d.year == "2")||(d.year == "3")||(d.year == "4")) {return (d.benchmark == 3 || d.benchmark == 6 || d.benchmark == 7 || d.benchmark == 10 || d.benchmark == 11)}
+					if ((d.year == "5")) {return (d.benchmark == 2 || d.benchmark == 3 || d.benchmark == 6 || d.benchmark == 7 || d.benchmark == 8 
+					|| d.benchmark == 9 || d.benchmark == 10 || d.benchmark == 11|| d.benchmark == 12 || d.benchmark == 13 || d.benchmark == 16 )}
+					}
+				if (tsvFile == 'Client7'){
+					if ((d.year == "5")) {return (d.benchmark == 3 || d.benchmark == 7 || d.benchmark == 9 || d.benchmark == 10 || d.benchmark == 12 || d.benchmark == 13)}
+					}
+				if (tsvFile == 'Client8'){
+					if ((d.year == "1")||(d.year == "2")) {return (d.benchmark == 3 || d.benchmark == 7 || d.benchmark == 10 || d.benchmark == 11)}
+					if ((d.year == "3")) {return (d.benchmark == 3 || d.benchmark == 10 || d.benchmark == 11)}
+					}
+				if (tsvFile == 'Client9'){
+					if ((d.year == "1")||(d.year == "2")||(d.year == "3")) {return (d.benchmark == 3 || d.benchmark == 7 || d.benchmark == 10 || d.benchmark == 11)}
+					}
+				if (tsvFile == 'Client10'){
+					if ((d.year == "1")||(d.year == "2")||(d.year == "3")) {return (d.benchmark == 3 || d.benchmark == 7 || d.benchmark == 10 || d.benchmark == 11)}
+					if ((d.year == "4")) {return (d.benchmark == 3 || d.benchmark == 7 || d.benchmark == 10)}
+					if ((d.year == "5")) {return (d.benchmark == 3 || d.benchmark == 6 || d.benchmark == 7 || d.benchmark == 10 || d.benchmark == 12|| d.benchmark == 16)}
+					}	
+				if (tsvFile == 'Client11'){
+					if ((d.year == "1")||(d.year == "2")) {return (d.benchmark == 3 || d.benchmark == 7 || d.benchmark == 10 || d.benchmark == 11)}
+					if ((d.year == "3")) {return (d.benchmark == 3 || d.benchmark == 10 || d.benchmark == 11)}
+					if ((d.year == "5")) {return (d.benchmark == 3 || d.benchmark == 6 || d.benchmark == 7 || d.benchmark == 10 || d.benchmark == 11 || d.benchmark == 12 || d.benchmark == 16)}
+					}	
+				if (tsvFile == 'Client12'){
+					if ((d.year == "1")||(d.year == "2")||(d.year == "5")) {return (d.benchmark == 3 || d.benchmark == 7 || d.benchmark == 10)}
+					}	
+				if (tsvFile == 'Client13'){
+					if ((d.year == "1")||(d.year == "2")) {return (d.benchmark == 3 || d.benchmark == 6 || d.benchmark == 7 || d.benchmark == 8 ||d.benchmark == 10)}
+					if ((d.year == "3")) {return (d.benchmark == 3 ||  d.benchmark == 6 || d.benchmark == 7 || d.benchmark == 10)}
+					if ((d.year == "4")) {return (d.benchmark == 3 || d.benchmark == 6 || d.benchmark == 7 ||  d.benchmark == 10 || d.benchmark == 11)}
+					if ((d.year == "5")) 
+						{return (d.benchmark == 1 || d.benchmark == 2 || d.benchmark == 3 || d.benchmark == 6 || d.benchmark == 7 || d.benchmark == 8 
+					|| d.benchmark == 9 || d.benchmark == 10 || d.benchmark == 11|| d.benchmark == 12 || d.benchmark == 13 || d.benchmark == 16 )}
+					}
+				if (tsvFile == 'Client14'){
+					if ((d.year == "4")) {return (d.benchmark == 1 || d.benchmark == 2 || d.benchmark == 3 || d.benchmark == 6 || d.benchmark == 7 || d.benchmark == 8 
+					|| d.benchmark == 9 || d.benchmark == 10 || d.benchmark == 11|| d.benchmark == 12 || d.benchmark == 13 || d.benchmark == 14 || d.benchmark == 15 || d.benchmark == 16 )}
+					
+					if ((d.year == "5")) {return (d.benchmark == 1 || d.benchmark == 2 || d.benchmark == 3 || d.benchmark == 6 || d.benchmark == 7 || d.benchmark == 8 
+					|| d.benchmark == 9 || d.benchmark == 10 || d.benchmark == 11|| d.benchmark == 12 || d.benchmark == 13 || d.benchmark == 16 )}
+					}
+				if (tsvFile == 'Client15'){
+					if ((d.year == "1")||(d.year == "2")) {return (d.benchmark == 3 || d.benchmark == 7 || d.benchmark == 10 || d.benchmark == 11)}
+					if ((d.year == "5")) {return (d.benchmark == 3 || d.benchmark == 6 || d.benchmark == 10 || d.benchmark == 11 || d.benchmark == 16)}
+					}
+				if (tsvFile == 'Client16'){
+					if ((d.year == "5")) {return (d.benchmark == 1 || d.benchmark == 3 || d.benchmark == 6 || d.benchmark == 7 || d.benchmark == 10 || d.benchmark == 12)}
+					}
+				if (tsvFile == 'Client18'){
+					if ((d.year == "5")) {return (d.benchmark == 3 || d.benchmark == 6 || d.benchmark == 7 || d.benchmark == 10 || d.benchmark == 12 || d.benchmark == 13)}
+					}
+				if (tsvFile == 'Client19' || tsvFile == 'Client21'){
+					if ((d.year == "5")) {return (d.benchmark == 2 || d.benchmark == 3 || d.benchmark == 6 || d.benchmark == 7 || d.benchmark == 8 
+					|| d.benchmark == 9 || d.benchmark == 10 || d.benchmark == 11|| d.benchmark == 12 || d.benchmark == 13 || d.benchmark == 16 )}}
+				if (tsvFile == 'Client20'){
+					if ((d.year == "1")||(d.year == "2")) {return (d.benchmark == 7 || d.benchmark == 10)}
+					if ((d.year == "4")||(d.year == "5")) {return (d.benchmark == 3 || d.benchmark == 10|| d.benchmark == 11)}
+					}	
+				if (tsvFile == 'Client21'){
+					if ((d.year == "4")) {return (d.benchmark == 1 || d.benchmark == 2 || d.benchmark == 3 || d.benchmark == 6 || d.benchmark == 7 || d.benchmark == 8 
+					|| d.benchmark == 9 || d.benchmark == 10 || d.benchmark == 11|| d.benchmark == 12 || d.benchmark == 13 || d.benchmark == 14 || d.benchmark == 15 || d.benchmark == 16 )}
+					
+					if ((d.year == "5")) {return (d.benchmark == 2 || d.benchmark == 3 || d.benchmark == 6 || d.benchmark == 7 || d.benchmark == 8 
+					|| d.benchmark == 9 || d.benchmark == 10 || d.benchmark == 11|| d.benchmark == 12 || d.benchmark == 13 || d.benchmark == 16 )}
+					}
+				if (tsvFile == 'Client22'){
+					if ((d.year == "4")) {return (d.benchmark == 3 || d.benchmark == 6 ||  d.benchmark == 7 || d.benchmark == 10 || d.benchmark == 11|| d.benchmark == 12|| d.benchmark == 14|| d.benchmark == 15|| d.benchmark == 16)}
+					if ((d.year == "5")) {return (d.benchmark == 3 || d.benchmark == 6 || d.benchmark == 7  || d.benchmark == 10 || d.benchmark == 11 || d.benchmark == 12 || d.benchmark == 16)}
+					}
+				if (tsvFile == 'Client23'){
+					if ((d.year == "5")) {return (d.benchmark == 3 || d.benchmark == 6 || d.benchmark == 7 || d.benchmark == 8 || d.benchmark == 10 || d.benchmark == 11 || d.benchmark == 12|| d.benchmark == 13)}
+					}
+				if (tsvFile == 'Client24'){
+					if ((d.year == "1")||(d.year == "2")||(d.year == "5")) {return (d.benchmark == 3 || d.benchmark == 7 || d.benchmark == 10 || d.benchmark == 11)}
+					if ((d.year == "4")) {return (d.benchmark == 3 || d.benchmark == 7 || d.benchmark == 10|| d.benchmark == 11|| d.benchmark == 14|| d.benchmark == 15|| d.benchmark == 16)}
+					}
+				if (tsvFile == 'Client25'){
+					if ((d.year == "1")||(d.year == "2")) {return (d.benchmark == 3 || d.benchmark == 7 || d.benchmark == 10)}
+					if ((d.year == "4")) 
+					{return (d.benchmark == 3 || d.benchmark == 6 ||  d.benchmark == 7 ||  d.benchmark == 8 || d.benchmark == 10 || d.benchmark == 11|| d.benchmark == 12|| d.benchmark == 13|| d.benchmark == 15|| d.benchmark == 16)}
+					if ((d.year == "5")) 
+					{return (d.benchmark == 3 || d.benchmark == 6 ||  d.benchmark == 7 ||  d.benchmark == 8 || d.benchmark == 10 || d.benchmark == 11|| d.benchmark == 12|| d.benchmark == 13|| d.benchmark == 16)}
+					}
+				if (tsvFile == 'Client28'){
+					if ((d.year == "1")||(d.year == "2")||(d.year == "3")||(d.year == "4")) 
+					{return (d.benchmark == 3 || d.benchmark == 7 || d.benchmark == 10 || d.benchmark == 11)}
+					if ((d.year == "5")) 
+					{return (d.benchmark == 3 || d.benchmark == 6 || d.benchmark == 10|| d.benchmark == 11|| d.benchmark == 12|| d.benchmark == 16)}
+					}
+				if (tsvFile == 'Client30' || tsvFile == 'Client38'){
+					if ((d.year == "1")||(d.year == "2")||(d.year == "5")) {return (d.benchmark == 3 || d.benchmark == 7 || d.benchmark == 10 || d.benchmark == 11)}
+					}	
+				if (tsvFile == 'Client31'){
+					if ((d.year == "1")||(d.year == "2")||(d.year == "3")) {return (d.benchmark == 3 || d.benchmark == 7 || d.benchmark == 10 || d.benchmark == 11)}
+					if ((d.year == "5")) {return (d.benchmark == 3 || d.benchmark == 6 || d.benchmark == 7 || d.benchmark == 10 || d.benchmark == 12 || d.benchmark == 16)}
+					}
+				if (tsvFile == 'Client32'){
+					if ((d.year == "1")||(d.year == "2")) {return (d.benchmark == 3 || d.benchmark == 10 || d.benchmark == 11)}
+					if ((d.year == "3")) {return (d.benchmark == 3 ||  d.benchmark == 11)}
+					if ((d.year == "5")) 
+					{return (d.benchmark == 3 || d.benchmark == 6 || d.benchmark == 7 || d.benchmark == 8 || d.benchmark == 10 || d.benchmark == 11 || d.benchmark == 12|| d.benchmark == 13)}
+					}
+				if (tsvFile == 'Client33'){
+					if ((d.year == "2")||(d.year == "3")||(d.year == "4")) 
+					{return (d.benchmark == 2 ||d.benchmark == 3 ||  d.benchmark == 6||  d.benchmark == 7 ||d.benchmark == 10 || d.benchmark == 11|| d.benchmark == 12 ||  d.benchmark == 14||  d.benchmark == 15|| d.benchmark == 16 )}
+					if ((d.year == "5")) {return (d.benchmark == 2 || d.benchmark == 3 || d.benchmark == 6||  d.benchmark == 7 ||  d.benchmark == 10 || d.benchmark == 11|| d.benchmark == 12|| d.benchmark == 16)}
+					}
+				if (tsvFile == 'Client34'){
+					if ((d.year == "5")) {return (d.benchmark == 3 || d.benchmark == 6 || d.benchmark == 7 || d.benchmark == 10 || d.benchmark == 12 || d.benchmark == 16)}
+					}	
+				if (tsvFile == "Client1" || tsvFile == "Client3" || tsvFile == "Client5"|| tsvFile == "Client14"
+						|| tsvFile == "Client19"|| tsvFile == "Client23"|| tsvFile == "Client26"
+						|| tsvFile == "Client35"|| tsvFile == "Client37") 
+						{return (d.benchmark == 3 || d.benchmark == 7 || d.benchmark == 10 || d.benchmark == 11)}
+				if (tsvFile == "Client2"|| tsvFile == "Client8"|| tsvFile == "Client9"|| tsvFile == "Client10"
+					|| tsvFile == "Client11" || tsvFile == "Client25") 
+					{return (d.benchmark == 3 || d.benchmark == 10)}
+				if (tsvFile == "Client4") {return (d.benchmark == 3 || d.benchmark == 6 || d.benchmark == 7 || d.benchmark == 10 || d.benchmark == 12)}
+				if (tsvFile == "Client5" || tsvFile == "Client35" ) {return (d.benchmark == 3 || d.benchmark == 7 || d.benchmark == 10 || d.benchmark == 11)}
+				if (tsvFile == "Client6" || tsvFile == "Client7"|| tsvFile == "Client10"|| tsvFile == "Client16"|| tsvFile == "Client18"|| 
+					tsvFile == "Client31" || tsvFile == "Client34") 
+					{return (d.benchmark == 3 || d.benchmark == 7 || d.benchmark == 10)}
+				if (tsvFile == "Client12") {return (d.benchmark == 3 || d.benchmark == 7)}
+				if (tsvFile == "Client13") {return (d.benchmark == 3 || d.benchmark == 6 || d.benchmark == 7 || d.benchmark == 10)}
+				if (tsvFile == "Client15" || tsvFile == "Client17" || tsvFile == "Client28" || tsvFile == "Client30"|| tsvFile == "Client38") 
+						{return (d.benchmark == 3 || d.benchmark == 10 || d.benchmark == 11)}
+				if (tsvFile == "Client20" ) 
+						{return (d.benchmark == 10)}
+				if (tsvFile == "Client21") 
+					{return (d.benchmark == 3 || d.benchmark == 7 || d.benchmark == 8 || d.benchmark == 10 || d.benchmark == 11 || d.benchmark == 12)}
+				if (tsvFile == "Client22") {return (d.benchmark == 3 || d.benchmark == 6 || d.benchmark == 7 || d.benchmark == 10 || d.benchmark == 11)}
+				if (tsvFile == "Client24") {return (d.benchmark == 3 || d.benchmark == 7 || d.benchmark == 11)}
+				if (tsvFile == "Client27") 
+					{return (d.benchmark == 3 || d.benchmark == 6 || d.benchmark == 7 || d.benchmark == 8 || d.benchmark == 10 || d.benchmark == 11 || d.benchmark == 12|| d.benchmark == 16)}
+				if (tsvFile == "Client29") {return (d.benchmark == 3 || d.benchmark == 6 || d.benchmark == 10 || d.benchmark == 12)}
+				if (tsvFile == "Client32" ) 
+						{return (d.benchmark == 3)}
+				if (tsvFile == "Client33") 
+					{return (d.benchmark == 2 || d.benchmark == 3 || d.benchmark == 6 || d.benchmark == 7 || d.benchmark == 10 || d.benchmark == 11 || d.benchmark == 12|| d.benchmark == 16)}
+				if (tsvFile == "Client36") 
+					{return (d.benchmark == 3 || d.benchmark == 7 || d.benchmark == 8 || d.benchmark == 10 || d.benchmark == 11 || d.benchmark == 15)}
+				
+				if (d.year == "1" || d.year == "2" || d.year == "5") {return (d.benchmark == 10)}
+			
+			})
+		 .style("opacity",0)
+			//.style("visibility", "hidden")
+			.style("stroke", "red")  // colour the line
+			.style("stroke-width","2")
+			.attr("x1", function(d) { return (d.benchmark - 1) * gridSize; })
+              .attr("y1", function(d) { return (d.year - 1) * gridSize; })
+			.attr("x2", function(d) { return ((d.benchmark - 1) * gridSize) + gridSize; })
+              .attr("y2", function(d) { return ((d.year - 1) * gridSize)+gridSize; });
+			  
+			var lines2 =  svg.selectAll(".benchmarkLines2").data(data, function(d) {return d.year+':'+d.benchmark;})
+		 .enter().append("line") 
+		 .attr('id', 'lines')	
+		 .filter(function(d) { 
+			if (tsvFile == 'Client2'){
+					if ((d.year == "1")||(d.year == "2")) {return (d.benchmark == 3 || d.benchmark == 7|| d.benchmark == 10 || d.benchmark == 11)}
+					if ((d.year == "3")) {return (d.benchmark == 3 || d.benchmark == 10 || d.benchmark == 11)}
+					if ((d.year == "5")) {return (d.benchmark == 3 || d.benchmark == 6 || d.benchmark == 10 || d.benchmark == 12)}
+					}
+				if (tsvFile == 'Client3'){
+					if ((d.year == "5")) {return (d.benchmark == 3 || d.benchmark == 7 || d.benchmark == 10 || d.benchmark == 11 || d.benchmark == 12 || d.benchmark == 16)}
+					}
+				if (tsvFile == 'Client5'){
+					if ((d.year == "2")||(d.year == "3")||(d.year == "4")) {return (d.benchmark == 3 || d.benchmark == 6 || d.benchmark == 7 || d.benchmark == 10 || d.benchmark == 11)}
+					if ((d.year == "5")) {return (d.benchmark == 2 || d.benchmark == 3 || d.benchmark == 6 || d.benchmark == 7 || d.benchmark == 8 
+					|| d.benchmark == 9 || d.benchmark == 10 || d.benchmark == 11|| d.benchmark == 12 || d.benchmark == 13 || d.benchmark == 16 )}
+					}
+				if (tsvFile == 'Client7'){
+					if ((d.year == "5")) {return (d.benchmark == 3 || d.benchmark == 7 || d.benchmark == 9 || d.benchmark == 10 || d.benchmark == 12 || d.benchmark == 13)}
+					}
+				if (tsvFile == 'Client8'){
+					if ((d.year == "1")||(d.year == "2")) {return (d.benchmark == 3 || d.benchmark == 7 || d.benchmark == 10 || d.benchmark == 11)}
+					if ((d.year == "3")) {return (d.benchmark == 3 || d.benchmark == 10 || d.benchmark == 11)}
+					}
+				if (tsvFile == 'Client9'){
+					if ((d.year == "1")||(d.year == "2")||(d.year == "3")) {return (d.benchmark == 3 || d.benchmark == 7 || d.benchmark == 10 || d.benchmark == 11)}
+					}
+				if (tsvFile == 'Client10'){
+					if ((d.year == "1")||(d.year == "2")||(d.year == "3")) {return (d.benchmark == 3 || d.benchmark == 7 || d.benchmark == 10 || d.benchmark == 11)}
+					if ((d.year == "4")) {return (d.benchmark == 3 || d.benchmark == 7 || d.benchmark == 10)}
+					if ((d.year == "5")) {return (d.benchmark == 3 || d.benchmark == 6 || d.benchmark == 7 || d.benchmark == 10 || d.benchmark == 12|| d.benchmark == 16)}
+					}	
+				if (tsvFile == 'Client11'){
+					if ((d.year == "1")||(d.year == "2")) {return (d.benchmark == 3 || d.benchmark == 7 || d.benchmark == 10 || d.benchmark == 11)}
+					if ((d.year == "3")) {return (d.benchmark == 3 || d.benchmark == 10 || d.benchmark == 11)}
+					if ((d.year == "5")) {return (d.benchmark == 3 || d.benchmark == 6 || d.benchmark == 7 || d.benchmark == 10 || d.benchmark == 11 || d.benchmark == 12 || d.benchmark == 16)}
+					}	
+				if (tsvFile == 'Client12'){
+					if ((d.year == "1")||(d.year == "2")||(d.year == "5")) {return (d.benchmark == 3 || d.benchmark == 7 || d.benchmark == 10)}
+					}	
+				if (tsvFile == 'Client13'){
+					if ((d.year == "1")||(d.year == "2")) {return (d.benchmark == 3 || d.benchmark == 6 || d.benchmark == 7 || d.benchmark == 8 ||d.benchmark == 10)}
+					if ((d.year == "3")) {return (d.benchmark == 3 ||  d.benchmark == 6 || d.benchmark == 7 || d.benchmark == 10)}
+					if ((d.year == "4")) {return (d.benchmark == 3 || d.benchmark == 6 || d.benchmark == 7 ||  d.benchmark == 10 || d.benchmark == 11)}
+					if ((d.year == "5")) 
+						{return (d.benchmark == 1 || d.benchmark == 2 || d.benchmark == 3 || d.benchmark == 6 || d.benchmark == 7 || d.benchmark == 8 
+					|| d.benchmark == 9 || d.benchmark == 10 || d.benchmark == 11|| d.benchmark == 12 || d.benchmark == 13 || d.benchmark == 16 )}
+					}
+				if (tsvFile == 'Client14'){
+					if ((d.year == "4")) {return (d.benchmark == 1 || d.benchmark == 2 || d.benchmark == 3 || d.benchmark == 6 || d.benchmark == 7 || d.benchmark == 8 
+					|| d.benchmark == 9 || d.benchmark == 10 || d.benchmark == 11|| d.benchmark == 12 || d.benchmark == 13 || d.benchmark == 14 || d.benchmark == 15 || d.benchmark == 16 )}
+					
+					if ((d.year == "5")) {return (d.benchmark == 1 || d.benchmark == 2 || d.benchmark == 3 || d.benchmark == 6 || d.benchmark == 7 || d.benchmark == 8 
+					|| d.benchmark == 9 || d.benchmark == 10 || d.benchmark == 11|| d.benchmark == 12 || d.benchmark == 13 || d.benchmark == 16 )}
+					}
+				if (tsvFile == 'Client15'){
+					if ((d.year == "1")||(d.year == "2")) {return (d.benchmark == 3 || d.benchmark == 7 || d.benchmark == 10 || d.benchmark == 11)}
+					if ((d.year == "5")) {return (d.benchmark == 3 || d.benchmark == 6 || d.benchmark == 10 || d.benchmark == 11 || d.benchmark == 16)}
+					}
+				if (tsvFile == 'Client16'){
+					if ((d.year == "5")) {return (d.benchmark == 1 || d.benchmark == 3 || d.benchmark == 6 || d.benchmark == 7 || d.benchmark == 10 || d.benchmark == 12)}
+					}
+				if (tsvFile == 'Client18'){
+					if ((d.year == "5")) {return (d.benchmark == 3 || d.benchmark == 6 || d.benchmark == 7 || d.benchmark == 10 || d.benchmark == 12 || d.benchmark == 13)}
+					}
+				if (tsvFile == 'Client19' || tsvFile == 'Client21'){
+					if ((d.year == "5")) {return (d.benchmark == 2 || d.benchmark == 3 || d.benchmark == 6 || d.benchmark == 7 || d.benchmark == 8 
+					|| d.benchmark == 9 || d.benchmark == 10 || d.benchmark == 11|| d.benchmark == 12 || d.benchmark == 13 || d.benchmark == 16 )}}
+				if (tsvFile == 'Client20'){
+					if ((d.year == "1")||(d.year == "2")) {return (d.benchmark == 7 || d.benchmark == 10)}
+					if ((d.year == "4")||(d.year == "5")) {return (d.benchmark == 3 || d.benchmark == 10|| d.benchmark == 11)}
+					}	
+				if (tsvFile == 'Client21'){
+					if ((d.year == "4")) {return (d.benchmark == 1 || d.benchmark == 2 || d.benchmark == 3 || d.benchmark == 6 || d.benchmark == 7 || d.benchmark == 8 
+					|| d.benchmark == 9 || d.benchmark == 10 || d.benchmark == 11|| d.benchmark == 12 || d.benchmark == 13 || d.benchmark == 14 || d.benchmark == 15 || d.benchmark == 16 )}
+					
+					if ((d.year == "5")) {return (d.benchmark == 2 || d.benchmark == 3 || d.benchmark == 6 || d.benchmark == 7 || d.benchmark == 8 
+					|| d.benchmark == 9 || d.benchmark == 10 || d.benchmark == 11|| d.benchmark == 12 || d.benchmark == 13 || d.benchmark == 16 )}
+					}
+				if (tsvFile == 'Client22'){
+					if ((d.year == "4")) {return (d.benchmark == 3 || d.benchmark == 6 ||  d.benchmark == 7 || d.benchmark == 10 || d.benchmark == 11|| d.benchmark == 12|| d.benchmark == 14|| d.benchmark == 15|| d.benchmark == 16)}
+					if ((d.year == "5")) {return (d.benchmark == 3 || d.benchmark == 6 || d.benchmark == 7  || d.benchmark == 10 || d.benchmark == 11 || d.benchmark == 12 || d.benchmark == 16)}
+					}
+				if (tsvFile == 'Client23'){
+					if ((d.year == "5")) {return (d.benchmark == 3 || d.benchmark == 6 || d.benchmark == 7 || d.benchmark == 8 || d.benchmark == 10 || d.benchmark == 11 || d.benchmark == 12|| d.benchmark == 13)}
+					}
+				if (tsvFile == 'Client24'){
+					if ((d.year == "1")||(d.year == "2")||(d.year == "5")) {return (d.benchmark == 3 || d.benchmark == 7 || d.benchmark == 10 || d.benchmark == 11)}
+					if ((d.year == "4")) {return (d.benchmark == 3 || d.benchmark == 7 || d.benchmark == 10|| d.benchmark == 11|| d.benchmark == 14|| d.benchmark == 15|| d.benchmark == 16)}
+					}
+				if (tsvFile == 'Client25'){
+					if ((d.year == "1")||(d.year == "2")) {return (d.benchmark == 3 || d.benchmark == 7 || d.benchmark == 10)}
+					if ((d.year == "4")) 
+					{return (d.benchmark == 3 || d.benchmark == 6 ||  d.benchmark == 7 ||  d.benchmark == 8 || d.benchmark == 10 || d.benchmark == 11|| d.benchmark == 12|| d.benchmark == 13|| d.benchmark == 15|| d.benchmark == 16)}
+					if ((d.year == "5")) 
+					{return (d.benchmark == 3 || d.benchmark == 6 ||  d.benchmark == 7 ||  d.benchmark == 8 || d.benchmark == 10 || d.benchmark == 11|| d.benchmark == 12|| d.benchmark == 13|| d.benchmark == 16)}
+					}
+				if (tsvFile == 'Client28'){
+					if ((d.year == "1")||(d.year == "2")||(d.year == "3")||(d.year == "4")) 
+					{return (d.benchmark == 3 || d.benchmark == 7 || d.benchmark == 10 || d.benchmark == 11)}
+					if ((d.year == "5")) 
+					{return (d.benchmark == 3 || d.benchmark == 6 || d.benchmark == 10|| d.benchmark == 11|| d.benchmark == 12|| d.benchmark == 16)}
+					}
+				if (tsvFile == 'Client30' || tsvFile == 'Client38'){
+					if ((d.year == "1")||(d.year == "2")||(d.year == "5")) {return (d.benchmark == 3 || d.benchmark == 7 || d.benchmark == 10 || d.benchmark == 11)}
+					}	
+				if (tsvFile == 'Client31'){
+					if ((d.year == "1")||(d.year == "2")||(d.year == "3")) {return (d.benchmark == 3 || d.benchmark == 7 || d.benchmark == 10 || d.benchmark == 11)}
+					if ((d.year == "5")) {return (d.benchmark == 3 || d.benchmark == 6 || d.benchmark == 7 || d.benchmark == 10 || d.benchmark == 12 || d.benchmark == 16)}
+					}
+				if (tsvFile == 'Client32'){
+					if ((d.year == "1")||(d.year == "2")) {return (d.benchmark == 3 || d.benchmark == 10 || d.benchmark == 11)}
+					if ((d.year == "3")) {return (d.benchmark == 3 ||  d.benchmark == 11)}
+					if ((d.year == "5")) 
+					{return (d.benchmark == 3 || d.benchmark == 6 || d.benchmark == 7 || d.benchmark == 8 || d.benchmark == 10 || d.benchmark == 11 || d.benchmark == 12|| d.benchmark == 13)}
+					}
+				if (tsvFile == 'Client33'){
+					if ((d.year == "2")||(d.year == "3")||(d.year == "4")) 
+					{return (d.benchmark == 2 ||d.benchmark == 3 ||  d.benchmark == 6||  d.benchmark == 7 ||d.benchmark == 10 || d.benchmark == 11|| d.benchmark == 12 ||  d.benchmark == 14||  d.benchmark == 15|| d.benchmark == 16 )}
+					if ((d.year == "5")) {return (d.benchmark == 2 || d.benchmark == 3 || d.benchmark == 6||  d.benchmark == 7 ||  d.benchmark == 10 || d.benchmark == 11|| d.benchmark == 12|| d.benchmark == 16)}
+					}
+				if (tsvFile == 'Client34'){
+					if ((d.year == "5")) {return (d.benchmark == 3 || d.benchmark == 6 || d.benchmark == 7 || d.benchmark == 10 || d.benchmark == 12 || d.benchmark == 16)}
+					}	
+				if (tsvFile == "Client1" || tsvFile == "Client3" || tsvFile == "Client5"|| tsvFile == "Client14"
+						|| tsvFile == "Client19"|| tsvFile == "Client23"|| tsvFile == "Client26"
+						|| tsvFile == "Client35"|| tsvFile == "Client37") 
+						{return (d.benchmark == 3 || d.benchmark == 7 || d.benchmark == 10 || d.benchmark == 11)}
+				if (tsvFile == "Client2"|| tsvFile == "Client8"|| tsvFile == "Client9"|| tsvFile == "Client10"
+					|| tsvFile == "Client11" || tsvFile == "Client25") 
+					{return (d.benchmark == 3 || d.benchmark == 10)}
+				if (tsvFile == "Client4") {return (d.benchmark == 3 || d.benchmark == 6 || d.benchmark == 7 || d.benchmark == 10 || d.benchmark == 12)}
+				if (tsvFile == "Client5" || tsvFile == "Client35" ) {return (d.benchmark == 3 || d.benchmark == 7 || d.benchmark == 10 || d.benchmark == 11)}
+				if (tsvFile == "Client6" || tsvFile == "Client7"|| tsvFile == "Client10"|| tsvFile == "Client16"|| tsvFile == "Client18"|| 
+					tsvFile == "Client31" || tsvFile == "Client34") 
+					{return (d.benchmark == 3 || d.benchmark == 7 || d.benchmark == 10)}
+				if (tsvFile == "Client12") {return (d.benchmark == 3 || d.benchmark == 7)}
+				if (tsvFile == "Client13") {return (d.benchmark == 3 || d.benchmark == 6 || d.benchmark == 7 || d.benchmark == 10)}
+				if (tsvFile == "Client15" || tsvFile == "Client17" || tsvFile == "Client28" || tsvFile == "Client30"|| tsvFile == "Client38") 
+						{return (d.benchmark == 3 || d.benchmark == 10 || d.benchmark == 11)}
+				if (tsvFile == "Client20" ) 
+						{return (d.benchmark == 10)}
+				if (tsvFile == "Client21") 
+					{return (d.benchmark == 3 || d.benchmark == 7 || d.benchmark == 8 || d.benchmark == 10 || d.benchmark == 11 || d.benchmark == 12)}
+				if (tsvFile == "Client22") {return (d.benchmark == 3 || d.benchmark == 6 || d.benchmark == 7 || d.benchmark == 10 || d.benchmark == 11)}
+				if (tsvFile == "Client24") {return (d.benchmark == 3 || d.benchmark == 7 || d.benchmark == 11)}
+				if (tsvFile == "Client27") 
+					{return (d.benchmark == 3 || d.benchmark == 6 || d.benchmark == 7 || d.benchmark == 8 || d.benchmark == 10 || d.benchmark == 11 || d.benchmark == 12|| d.benchmark == 16)}
+				if (tsvFile == "Client29") {return (d.benchmark == 3 || d.benchmark == 6 || d.benchmark == 10 || d.benchmark == 12)}
+				if (tsvFile == "Client32" ) 
+						{return (d.benchmark == 3)}
+				if (tsvFile == "Client33") 
+					{return (d.benchmark == 2 || d.benchmark == 3 || d.benchmark == 6 || d.benchmark == 7 || d.benchmark == 10 || d.benchmark == 11 || d.benchmark == 12|| d.benchmark == 16)}
+				if (tsvFile == "Client36") 
+					{return (d.benchmark == 3 || d.benchmark == 7 || d.benchmark == 8 || d.benchmark == 10 || d.benchmark == 11 || d.benchmark == 15)}
+				
+				if (d.year == "1" || d.year == "2" || d.year == "5") {return (d.benchmark == 10)}
+		 
+				
+			})
+		
+		.style("opacity",0)
+		    //.style("visibility", "hidden")
+			.style("stroke", "red")  // colour the line
+			.style("stroke-width","2")
+			.attr("x2", function(d) { return (d.benchmark - 1) * gridSize; })
+              .attr("y1", function(d) { return (d.year - 1) * gridSize; })
+			.attr("x1", function(d) { return ((d.benchmark - 1) * gridSize) + gridSize; })
+              .attr("y2", function(d) { return ((d.year - 1) * gridSize)+gridSize; })
+		//d3.selectAll("#lines").attr("display", "none");
+		lines.transition().duration(1000)
+			.style("opacity",1)
+		
+		lines2.transition().duration(1000)
+		.style("opacity",1)
+			
+		}
+		
+		
+		
+		
+		if(st == "service") {
+		 var lines =  svg.selectAll(".benchmarkLines").data(data, function(d) {return d.year+':'+d.benchmark;})
+		 .enter().append("line") 
+		 .attr('id', 'lines')		
+			.filter(function(d) {
+			if (tsvFile == 'Client2'){
+					if ((d.year == "1")||(d.year == "2")||(d.year == "3")) {return (d.benchmark == 3 || d.benchmark == 10 || d.benchmark == 11)}
+					if ((d.year == "5")) {return (d.benchmark == 3 || d.benchmark == 6 || d.benchmark == 10 || d.benchmark == 12)}
+					}
+				if (tsvFile == 'Client3'){
+					if ((d.year == "5")) {return (d.benchmark == 3 || d.benchmark == 7 || d.benchmark == 10 || d.benchmark == 11 || d.benchmark == 12)}
+					}
+				if (tsvFile == 'Client4'){
+					if ((d.year == "5")) {return (d.benchmark == 3 || d.benchmark == 6 || d.benchmark == 10 || d.benchmark == 12)}
+					}
+				if (tsvFile == 'Client5'){
+					if ((d.year == "2")||(d.year == "3")) {return (d.benchmark == 3 || d.benchmark == 6 || d.benchmark == 10 || d.benchmark == 11)}
+					if ((d.year == "5")) {return (d.benchmark == 3 || d.benchmark == 6 || d.benchmark == 7 || d.benchmark == 8 
+					|| d.benchmark == 10 || d.benchmark == 11|| d.benchmark == 12)}
+					}
+				if (tsvFile == 'Client7'){
+					if ((d.year == "5")) {return (d.benchmark == 3 || d.benchmark == 10 || d.benchmark == 12)}
+					}
+				if (tsvFile == 'Client8'){
+					if ((d.year == "1")||(d.year == "2")||(d.year == "3")) {return (d.benchmark == 3 || d.benchmark == 10 || d.benchmark == 11)}
+					}
+				if (tsvFile == 'Client9'){
+					if ((d.year == "1")||(d.year == "2")||(d.year == "3")) {return (d.benchmark == 3 || d.benchmark == 10 || d.benchmark == 11)}
+					}
+				if (tsvFile == 'Client10'){
+					if ((d.year == "1")||(d.year == "2")) {return (d.benchmark == 3 || d.benchmark == 10 || d.benchmark == 11)}
+					if ((d.year == "3")) {return (d.benchmark == 3 || d.benchmark == 7 || d.benchmark == 10 || d.benchmark == 11)}
+					if ((d.year == "4")) {return (d.benchmark == 3 || d.benchmark == 7 || d.benchmark == 10)}
+					if ((d.year == "5")) {return (d.benchmark == 3 || d.benchmark == 6 || d.benchmark == 7 || d.benchmark == 10 || d.benchmark == 12)}
+					}
+				if (tsvFile == 'Client11'){
+					if ((d.year == "1")||(d.year == "2")||(d.year == "3")) {return (d.benchmark == 3 || d.benchmark == 10 || d.benchmark == 11)}
+					if ((d.year == "5")) {return (d.benchmark == 3 || d.benchmark == 6 || d.benchmark == 7 || d.benchmark == 10 || d.benchmark == 11 || d.benchmark == 12)}
+					}
+				if (tsvFile == 'Client12'){
+					if ((d.year == "1")||(d.year == "2")) {return (d.benchmark == 3 || d.benchmark == 10)}
+					if ((d.year == "5")) {return (d.benchmark == 3 ||  d.benchmark == 10)}
+					}
+				if (tsvFile == 'Client13'){
+					if ((d.year == "1")||(d.year == "2")) {return (d.benchmark == 3 || d.benchmark == 6 || d.benchmark == 8 ||d.benchmark == 10)}
+					if ((d.year == "3")) {return (d.benchmark == 3 ||  d.benchmark == 6 || d.benchmark == 10)}
+					if ((d.year == "4")) {return (d.benchmark == 3 ||  d.benchmark == 10 || d.benchmark == 11)}
+					if ((d.year == "5")) {return (d.benchmark == 3 || d.benchmark == 6 || d.benchmark == 7 || d.benchmark == 8 || d.benchmark == 10 || d.benchmark == 11 || d.benchmark == 12)}
+					}
+					
+				if (tsvFile == 'Client14'){
+					if ((d.year == "1")||(d.year == "2")||(d.year == "3")) {return (d.benchmark == 3 || d.benchmark == 10|| d.benchmark == 11)}
+					if ((d.year == "4")) {return (d.benchmark == 3 ||  d.benchmark == 7 || d.benchmark == 8|| d.benchmark == 10 || d.benchmark == 11|| d.benchmark == 12)}
+					if ((d.year == "5")) {return (d.benchmark == 3 || d.benchmark == 6 || d.benchmark == 7 || d.benchmark == 8 || d.benchmark == 10 || d.benchmark == 11 || d.benchmark == 12)}
+					}
+				if (tsvFile == 'Client15'){
+					if ((d.year == "5")) {return (d.benchmark == 3 || d.benchmark == 6 || d.benchmark == 10 || d.benchmark == 11)}
+					}
+				if (tsvFile == 'Client16'){
+					if ((d.year == "5")) {return (d.benchmark == 3 || d.benchmark == 6 || d.benchmark == 10 || d.benchmark == 12)}
+					}
+				if (tsvFile == 'Client18' || tsvFile == 'Client34'){
+					if ((d.year == "5")) {return (d.benchmark == 3 || d.benchmark == 6 || d.benchmark == 7 || d.benchmark == 10 || d.benchmark == 12)}
+					}
+				if (tsvFile == 'Client19' || tsvFile == 'Client21'){
+					if ((d.year == "5")) {return (d.benchmark == 3 || d.benchmark == 6 || d.benchmark == 7 || d.benchmark == 8 || d.benchmark == 10 || d.benchmark == 11 || d.benchmark == 12)}
+					}
+				if (tsvFile == 'Client20'){
+					if ((d.year == "4")||(d.year == "5")) {return (d.benchmark == 3 || d.benchmark == 10|| d.benchmark == 11)}
+					}
+				if (tsvFile == 'Client22'){
+					if ((d.year == "1")||(d.year == "2")||(d.year == "3")) {return (d.benchmark == 3 || d.benchmark == 6 || d.benchmark == 10|| d.benchmark == 11)}
+					if ((d.year == "4")) {return (d.benchmark == 3 ||  d.benchmark == 7 || d.benchmark == 10 || d.benchmark == 11|| d.benchmark == 12|| d.benchmark == 15)}
+					if ((d.year == "5")) {return (d.benchmark == 3 || d.benchmark == 6 || d.benchmark == 7  || d.benchmark == 10 || d.benchmark == 11 || d.benchmark == 12)}
+					}
+				if (tsvFile == 'Client23' || tsvFile == 'Client28'){
+					if ((d.year == "5")) {return (d.benchmark == 3 || d.benchmark == 6 || d.benchmark == 10 || d.benchmark == 11 || d.benchmark == 12)}
+					}
+				if (tsvFile == 'Client24'){
+					if ((d.year == "1")||(d.year == "2")) {return (d.benchmark == 3 || d.benchmark == 10 || d.benchmark == 11)}
+					if ((d.year == "4")) {return (d.benchmark == 3 || d.benchmark == 7 || d.benchmark == 10|| d.benchmark == 11|| d.benchmark == 15)}
+					if ((d.year == "5")) {return (d.benchmark == 3 || d.benchmark == 7 || d.benchmark == 10 || d.benchmark == 11)}
+					}
+				if (tsvFile == 'Client25'){
+					if ((d.year == "5")) {return (d.benchmark == 3 || d.benchmark == 6 || d.benchmark == 7  || d.benchmark == 8 || d.benchmark == 10 || d.benchmark == 11 || d.benchmark == 12)}
+					if ((d.year == "4")) {return (d.benchmark == 3 || d.benchmark == 7 || d.benchmark == 8 || d.benchmark == 10 || d.benchmark == 11 || d.benchmark == 12|| d.benchmark == 15)}
+					}
+				if (tsvFile == 'Client31'){
+					if ((d.year == "1")||(d.year == "2")||(d.year == "3")) {return (d.benchmark == 3 || d.benchmark == 10 || d.benchmark == 11)}
+					if ((d.year == "5")) {return (d.benchmark == 3 || d.benchmark == 6 || d.benchmark == 7 || d.benchmark == 10 || d.benchmark == 12)}
+					}
+				if (tsvFile == 'Client32'){
+					if ((d.year == "1")||(d.year == "2")) {return (d.benchmark == 3 || d.benchmark == 10 || d.benchmark == 11)}
+					if ((d.year == "3")) {return (d.benchmark == 3 ||  d.benchmark == 11)}
+					if ((d.year == "5")) {return (d.benchmark == 3 || d.benchmark == 6 || d.benchmark == 7 || d.benchmark == 8 || d.benchmark == 10 || d.benchmark == 11 || d.benchmark == 12)}
+					}
+				if (tsvFile == 'Client33'){
+					if ((d.year == "2")||(d.year == "3")) {return (d.benchmark == 2 ||d.benchmark == 3 ||  d.benchmark == 6||  d.benchmark == 7 ||d.benchmark == 10 || d.benchmark == 11|| d.benchmark == 12 ||  d.benchmark == 14||  d.benchmark == 15|| d.benchmark == 16 )}
+					if ((d.year == "4")) {return (d.benchmark == 3 ||  d.benchmark == 7 ||  d.benchmark == 10 || d.benchmark == 11|| d.benchmark == 12|| d.benchmark == 15)}
+					}
+				if (tsvFile == "Client12"||tsvFile == "Client32") {return (d.benchmark == 3)}
+				if (tsvFile == "Client20") {return (d.benchmark == 10)}
+				if (tsvFile == "Client24") {return (d.benchmark == 3 || d.benchmark == 11)}
+				if (tsvFile == "Client21") {return (d.benchmark == 3 || d.benchmark == 7 || d.benchmark == 8||d.benchmark == 10 || d.benchmark == 11 || d.benchmark == 12)}
+				if (tsvFile == "Client36") {return (d.benchmark == 3 || d.benchmark == 7 || d.benchmark == 8||d.benchmark == 10 || d.benchmark == 11|| d.benchmark == 15)}
+				if (tsvFile == "Client4") {return (d.benchmark == 3 || d.benchmark == 10 || d.benchmark == 12)}
+				if (tsvFile == "Client2"|| tsvFile == "Client6"|| tsvFile == "Client7"|| tsvFile == "Client8"|| tsvFile == "Client9"|| tsvFile == "Client10"
+					|| tsvFile == "Client11"|| tsvFile == "Client13"|| tsvFile == "Client16"|| tsvFile == "Client18"|| tsvFile == "Client25"|| tsvFile == "Client31"
+					|| tsvFile == "Client34") 
+					{return (d.benchmark == 3 || d.benchmark == 10)}
+				if (tsvFile == "Client1" || tsvFile == "Client3" || tsvFile == "Client5"|| tsvFile == "Client14"|| tsvFile == "Client15"
+					|| tsvFile == "Client17"|| tsvFile == "Client19"|| tsvFile == "Client22"|| tsvFile == "Client23"|| tsvFile == "Client26"
+					|| tsvFile == "Client28"|| tsvFile == "Client30"|| tsvFile == "Client35"|| tsvFile == "Client37"|| tsvFile == "Client38") 
+					{return (d.benchmark == 3 || d.benchmark == 10 || d.benchmark == 11)}
+				if (tsvFile == "Client27") {return (d.benchmark == 3 || d.benchmark == 6 || d.benchmark == 7 || d.benchmark == 8||d.benchmark == 10 || d.benchmark == 11 || d.benchmark == 12)}
+				if (tsvFile == "Client29") {return (d.benchmark == 3 || d.benchmark == 6 || d.benchmark == 10 || d.benchmark == 12)}
+				if (tsvFile == "Client33") {return (d.benchmark == 3 || d.benchmark == 7 || d.benchmark == 10 || d.benchmark == 11 || d.benchmark == 12)}
+				if (d.year == "1" || d.year == "2" || d.year == "5") {return (d.benchmark == 10)}
+			
+			})
+		 .style("opacity",0)
+			//.style("visibility", "hidden")
+			.style("stroke", "red")  // colour the line
+			.style("stroke-width","2")
+			.attr("x1", function(d) { return (d.benchmark - 1) * gridSize; })
+              .attr("y1", function(d) { return (d.year - 1) * gridSize; })
+			.attr("x2", function(d) { return ((d.benchmark - 1) * gridSize) + gridSize; })
+              .attr("y2", function(d) { return ((d.year - 1) * gridSize)+gridSize; });
+			  
+			var lines2 =  svg.selectAll(".benchmarkLines2").data(data, function(d) {return d.year+':'+d.benchmark;})
+		 .enter().append("line") 
+		 .attr('id', 'lines')	
+		 .filter(function(d) { 
+				if (tsvFile == 'Client2'){
+					if ((d.year == "1")||(d.year == "2")||(d.year == "3")) {return (d.benchmark == 3 || d.benchmark == 10 || d.benchmark == 11)}
+					if ((d.year == "5")) {return (d.benchmark == 3 || d.benchmark == 6 || d.benchmark == 10 || d.benchmark == 12)}
+					}
+				if (tsvFile == 'Client3'){
+					if ((d.year == "5")) {return (d.benchmark == 3 || d.benchmark == 7 || d.benchmark == 10 || d.benchmark == 11 || d.benchmark == 12)}
+					}
+				if (tsvFile == 'Client4'){
+					if ((d.year == "5")) {return (d.benchmark == 3 || d.benchmark == 6 || d.benchmark == 10 || d.benchmark == 12)}
+					}
+				if (tsvFile == 'Client5'){
+					if ((d.year == "2")||(d.year == "3")) {return (d.benchmark == 3 || d.benchmark == 6 || d.benchmark == 10 || d.benchmark == 11)}
+					if ((d.year == "5")) {return (d.benchmark == 3 || d.benchmark == 6 || d.benchmark == 7 || d.benchmark == 8 
+					|| d.benchmark == 10 || d.benchmark == 11|| d.benchmark == 12)}
+					}
+				if (tsvFile == 'Client7'){
+					if ((d.year == "5")) {return (d.benchmark == 3 || d.benchmark == 10 || d.benchmark == 12)}
+					}
+				if (tsvFile == 'Client8'){
+					if ((d.year == "1")||(d.year == "2")||(d.year == "3")) {return (d.benchmark == 3 || d.benchmark == 10 || d.benchmark == 11)}
+					}
+				if (tsvFile == 'Client9'){
+					if ((d.year == "1")||(d.year == "2")||(d.year == "3")) {return (d.benchmark == 3 || d.benchmark == 10 || d.benchmark == 11)}
+					}
+				if (tsvFile == 'Client10'){
+					if ((d.year == "1")||(d.year == "2")) {return (d.benchmark == 3 || d.benchmark == 10 || d.benchmark == 11)}
+					if ((d.year == "3")) {return (d.benchmark == 3 || d.benchmark == 7 || d.benchmark == 10 || d.benchmark == 11)}
+					if ((d.year == "4")) {return (d.benchmark == 3 || d.benchmark == 7 || d.benchmark == 10)}
+					if ((d.year == "5")) {return (d.benchmark == 3 || d.benchmark == 6 || d.benchmark == 7 || d.benchmark == 10 || d.benchmark == 12)}
+					}
+				if (tsvFile == 'Client11'){
+					if ((d.year == "1")||(d.year == "2")||(d.year == "3")) {return (d.benchmark == 3 || d.benchmark == 10 || d.benchmark == 11)}
+					if ((d.year == "5")) {return (d.benchmark == 3 || d.benchmark == 6 || d.benchmark == 7 || d.benchmark == 10 || d.benchmark == 11 || d.benchmark == 12)}
+					}
+				if (tsvFile == 'Client12'){
+					if ((d.year == "1")||(d.year == "2")) {return (d.benchmark == 3 || d.benchmark == 10)}
+					if ((d.year == "5")) {return (d.benchmark == 3 ||  d.benchmark == 10)}
+					}
+				if (tsvFile == 'Client13'){
+					if ((d.year == "1")||(d.year == "2")) {return (d.benchmark == 3 || d.benchmark == 6 || d.benchmark == 8 ||d.benchmark == 10)}
+					if ((d.year == "3")) {return (d.benchmark == 3 ||  d.benchmark == 6 || d.benchmark == 10)}
+					if ((d.year == "4")) {return (d.benchmark == 3 ||  d.benchmark == 10 || d.benchmark == 11)}
+					if ((d.year == "5")) {return (d.benchmark == 3 || d.benchmark == 6 || d.benchmark == 7 || d.benchmark == 8 || d.benchmark == 10 || d.benchmark == 11 || d.benchmark == 12)}
+					}
+					
+				if (tsvFile == 'Client14'){
+					if ((d.year == "1")||(d.year == "2")||(d.year == "3")) {return (d.benchmark == 3 || d.benchmark == 10|| d.benchmark == 11)}
+					if ((d.year == "4")) {return (d.benchmark == 3 ||  d.benchmark == 7 || d.benchmark == 8|| d.benchmark == 10 || d.benchmark == 11|| d.benchmark == 12)}
+					if ((d.year == "5")) {return (d.benchmark == 3 || d.benchmark == 6 || d.benchmark == 7 || d.benchmark == 8 || d.benchmark == 10 || d.benchmark == 11 || d.benchmark == 12)}
+					}
+				if (tsvFile == 'Client15'){
+					if ((d.year == "5")) {return (d.benchmark == 3 || d.benchmark == 6 || d.benchmark == 10 || d.benchmark == 11)}
+					}
+				if (tsvFile == 'Client16'){
+					if ((d.year == "5")) {return (d.benchmark == 3 || d.benchmark == 6 || d.benchmark == 10 || d.benchmark == 12)}
+					}
+				if (tsvFile == 'Client18' || tsvFile == 'Client34'){
+					if ((d.year == "5")) {return (d.benchmark == 3 || d.benchmark == 6 || d.benchmark == 7 || d.benchmark == 10 || d.benchmark == 12)}
+					}
+				if (tsvFile == 'Client19' || tsvFile == 'Client21'){
+					if ((d.year == "5")) {return (d.benchmark == 3 || d.benchmark == 6 || d.benchmark == 7 || d.benchmark == 8 || d.benchmark == 10 || d.benchmark == 11 || d.benchmark == 12)}
+					}
+				if (tsvFile == 'Client20'){
+					if ((d.year == "4")||(d.year == "5")) {return (d.benchmark == 3 || d.benchmark == 10|| d.benchmark == 11)}
+					}
+				if (tsvFile == 'Client22'){
+					if ((d.year == "1")||(d.year == "2")||(d.year == "3")) {return (d.benchmark == 3 || d.benchmark == 6 || d.benchmark == 10|| d.benchmark == 11)}
+					if ((d.year == "4")) {return (d.benchmark == 3 ||  d.benchmark == 7 || d.benchmark == 10 || d.benchmark == 11|| d.benchmark == 12|| d.benchmark == 15)}
+					if ((d.year == "5")) {return (d.benchmark == 3 || d.benchmark == 6 || d.benchmark == 7  || d.benchmark == 10 || d.benchmark == 11 || d.benchmark == 12)}
+					}
+				if (tsvFile == 'Client23' || tsvFile == 'Client28'){
+					if ((d.year == "5")) {return (d.benchmark == 3 || d.benchmark == 6 || d.benchmark == 10 || d.benchmark == 11 || d.benchmark == 12)}
+					}
+				if (tsvFile == 'Client24'){
+					if ((d.year == "1")||(d.year == "2")) {return (d.benchmark == 3 || d.benchmark == 10 || d.benchmark == 11)}
+					if ((d.year == "4")) {return (d.benchmark == 3 || d.benchmark == 7 || d.benchmark == 10|| d.benchmark == 11|| d.benchmark == 15)}
+					if ((d.year == "5")) {return (d.benchmark == 3 || d.benchmark == 7 || d.benchmark == 10 || d.benchmark == 11)}
+					}
+				if (tsvFile == 'Client25'){
+					if ((d.year == "5")) {return (d.benchmark == 3 || d.benchmark == 6 || d.benchmark == 7  || d.benchmark == 8 || d.benchmark == 10 || d.benchmark == 11 || d.benchmark == 12)}
+					if ((d.year == "4")) {return (d.benchmark == 3 || d.benchmark == 7 || d.benchmark == 8 || d.benchmark == 10 || d.benchmark == 11 || d.benchmark == 12|| d.benchmark == 15)}
+					}
+				if (tsvFile == 'Client31'){
+					if ((d.year == "1")||(d.year == "2")||(d.year == "3")) {return (d.benchmark == 3 || d.benchmark == 10 || d.benchmark == 11)}
+					if ((d.year == "5")) {return (d.benchmark == 3 || d.benchmark == 6 || d.benchmark == 7 || d.benchmark == 10 || d.benchmark == 12)}
+					}
+				if (tsvFile == 'Client32'){
+					if ((d.year == "1")||(d.year == "2")) {return (d.benchmark == 3 || d.benchmark == 10 || d.benchmark == 11)}
+					if ((d.year == "3")) {return (d.benchmark == 3 ||  d.benchmark == 11)}
+					if ((d.year == "5")) {return (d.benchmark == 3 || d.benchmark == 6 || d.benchmark == 7 || d.benchmark == 8 || d.benchmark == 10 || d.benchmark == 11 || d.benchmark == 12)}
+					}
+				if (tsvFile == 'Client33'){
+					if ((d.year == "2")||(d.year == "3")) {return (d.benchmark == 2 ||d.benchmark == 3 ||  d.benchmark == 6||  d.benchmark == 7 ||d.benchmark == 10 || d.benchmark == 11|| d.benchmark == 12 ||  d.benchmark == 14||  d.benchmark == 15|| d.benchmark == 16 )}
+					if ((d.year == "4")) {return (d.benchmark == 3 ||  d.benchmark == 7 ||  d.benchmark == 10 || d.benchmark == 11|| d.benchmark == 12|| d.benchmark == 15)}
+					}
+				if (tsvFile == "Client12"||tsvFile == "Client32") {return (d.benchmark == 3)}
+				if (tsvFile == "Client20") {return (d.benchmark == 10)}
+				if (tsvFile == "Client24") {return (d.benchmark == 3 || d.benchmark == 11)}
+				if (tsvFile == "Client21") {return (d.benchmark == 3 || d.benchmark == 7 || d.benchmark == 8||d.benchmark == 10 || d.benchmark == 11 || d.benchmark == 12)}
+				if (tsvFile == "Client36") {return (d.benchmark == 3 || d.benchmark == 7 || d.benchmark == 8||d.benchmark == 10 || d.benchmark == 11|| d.benchmark == 15)}
+				if (tsvFile == "Client4") {return (d.benchmark == 3 || d.benchmark == 10 || d.benchmark == 12)}
+				if (tsvFile == "Client2"|| tsvFile == "Client6"|| tsvFile == "Client7"|| tsvFile == "Client8"|| tsvFile == "Client9"|| tsvFile == "Client10"
+					|| tsvFile == "Client11"|| tsvFile == "Client13"|| tsvFile == "Client16"|| tsvFile == "Client18"|| tsvFile == "Client25"|| tsvFile == "Client31"
+					|| tsvFile == "Client34") 
+					{return (d.benchmark == 3 || d.benchmark == 10)}
+				if (tsvFile == "Client1" || tsvFile == "Client3" || tsvFile == "Client5"|| tsvFile == "Client14"|| tsvFile == "Client15"
+					|| tsvFile == "Client17"|| tsvFile == "Client19"|| tsvFile == "Client22"|| tsvFile == "Client23"|| tsvFile == "Client26"
+					|| tsvFile == "Client28"|| tsvFile == "Client30"|| tsvFile == "Client35"|| tsvFile == "Client37"|| tsvFile == "Client38") 
+					{return (d.benchmark == 3 || d.benchmark == 10 || d.benchmark == 11)}
+				if (tsvFile == "Client27") {return (d.benchmark == 3 || d.benchmark == 6 || d.benchmark == 7 || d.benchmark == 8||d.benchmark == 10 || d.benchmark == 11 || d.benchmark == 12)}
+				if (tsvFile == "Client29") {return (d.benchmark == 3 || d.benchmark == 6 || d.benchmark == 10 || d.benchmark == 12)}
+				if (tsvFile == "Client33") {return (d.benchmark == 3 || d.benchmark == 7 || d.benchmark == 10 || d.benchmark == 11 || d.benchmark == 12)}
+				if (d.year == "1" || d.year == "2" || d.year == "5") {return (d.benchmark == 10)}
+			})
+		
+		.style("opacity",0)
+		    //.style("visibility", "hidden")
+			.style("stroke", "red")  // colour the line
+			.style("stroke-width","2")
+			.attr("x2", function(d) { return (d.benchmark - 1) * gridSize; })
+              .attr("y1", function(d) { return (d.year - 1) * gridSize; })
+			.attr("x1", function(d) { return ((d.benchmark - 1) * gridSize) + gridSize; })
+              .attr("y2", function(d) { return ((d.year - 1) * gridSize)+gridSize; })
+		//d3.selectAll("#lines").attr("display", "none");
+		lines.transition().duration(1000)
+			.style("opacity",1)
+		
+		lines2.transition().duration(1000)
+		.style("opacity",1)
+			
+		}
+		if(st == "shop") {
+		
+		 //var lines = svg.selectAll(".benchmark").data(data);
+		var lines =  svg.selectAll(".benchmarkLines").data(data, function(d) {return d.year+':'+d.benchmark;})
+		 .enter().append("line") 
+		 .attr('id', 'lines')
+			        // attach a line
+			//.filter(function(d) { return tsvFile == 'Client1'})		
+			.filter(function(d) {
+			 if ((tsvFile == 'Client33')){
+				if ((d.year == "2")||(d.year == "3")) {return (d.benchmark == 3 || d.benchmark == 10 || d.benchmark == 11 || d.benchmark == 14 || d.benchmark == 16
+				|| d.benchmark == 6|| d.benchmark == 15|| d.benchmark == 2|| d.benchmark == 7|| d.benchmark == 12)}
+				else if (d.year == "4"){
+				return (d.benchmark == 3 || d.benchmark == 10 || d.benchmark == 11 || d.benchmark == 12 || d.benchmark == 14 || d.benchmark == 16
+				|| d.benchmark == 7|| d.benchmark == 15)}
+				else if (d.year == "5"){
+				return (d.benchmark == 3 || d.benchmark == 10 || d.benchmark == 11 || d.benchmark == 14 || d.benchmark == 16
+				|| d.benchmark == 6|| d.benchmark == 15|| d.benchmark == 7|| d.benchmark == 12)}
+				
+				}
+			if ((tsvFile == 'Client24')){
+				if ((d.year == "4")||(d.year == "5")) {return (d.benchmark == 3 || d.benchmark == 10 || d.benchmark == 11 || d.benchmark == 14 || d.benchmark == 16
+				|| d.benchmark == 7|| d.benchmark == 15)}
+				else{
+				return (d.benchmark == 3 || d.benchmark == 10 || d.benchmark == 11 || d.benchmark == 14 || d.benchmark == 16 || d.benchmark == 15)
+				}}
+				
+			if ((tsvFile == 'Client22')){
+				if ((d.year == "1")||(d.year == "2")||(d.year == "3")) 
+					{return (d.benchmark == 3 || d.benchmark == 10 || d.benchmark == 11 || d.benchmark == 14 || d.benchmark == 16
+						|| d.benchmark == 6|| d.benchmark == 15)}
+				else if (d.year == "4"){
+				return (d.benchmark == 3 || d.benchmark == 10 || d.benchmark == 11 || d.benchmark == 12 || d.benchmark == 14 || d.benchmark == 16
+				|| d.benchmark == 7|| d.benchmark == 15)}
+				else if (d.year == "5"){
+				return (d.benchmark == 3 || d.benchmark == 10 || d.benchmark == 11 || d.benchmark == 14 || d.benchmark == 16
+				|| d.benchmark == 6|| d.benchmark == 15|| d.benchmark == 7|| d.benchmark == 12)}
+				
+				}
+			if ((tsvFile == 'Client14')|| (tsvFile == 'Client25')){
+				if ((d.year == "4")) {return (d.benchmark == 3 || d.benchmark == 10 || d.benchmark == 11 || d.benchmark == 14 || d.benchmark == 16
+				|| d.benchmark == 7|| d.benchmark == 15|| d.benchmark == 8|| d.benchmark == 12)}
+				else { if (d.year == "5"){
+				return (d.benchmark == 3 || d.benchmark == 10 || d.benchmark == 11 || d.benchmark == 14 || d.benchmark == 16
+				|| d.benchmark == 6|| d.benchmark == 15|| d.benchmark == 7|| d.benchmark == 8|| d.benchmark == 12)}
+				else{
+				return (d.benchmark == 3 || d.benchmark == 10 || d.benchmark == 11 || d.benchmark == 14 || d.benchmark == 16 || d.benchmark == 15)
+				}}
+				}
+			 if ((tsvFile == 'Client13')){
+				if ((d.year == "1")||(d.year == "2")) {return (d.benchmark == 3 || d.benchmark == 10 || d.benchmark == 11 || d.benchmark == 14 || d.benchmark == 16
+				|| d.benchmark == 6|| d.benchmark == 15 || d.benchmark == 8)}
+				else { if (d.year == "3"){
+				return (d.benchmark == 3 || d.benchmark == 10 || d.benchmark == 11 || d.benchmark == 14 || d.benchmark == 16
+				|| d.benchmark == 6|| d.benchmark == 15)}
+				else if (d.year == "5"){
+				return (d.benchmark == 3 || d.benchmark == 10 || d.benchmark == 11 || d.benchmark == 14 || d.benchmark == 16
+				|| d.benchmark == 6|| d.benchmark == 15|| d.benchmark == 7|| d.benchmark == 8)|| d.benchmark == 12}
+				else{
+				return (d.benchmark == 3 || d.benchmark == 10 || d.benchmark == 11 || d.benchmark == 14 || d.benchmark == 16 || d.benchmark == 15)
+				}}
+				}
+			  if ((tsvFile == 'Client11')||(tsvFile == 'Client19')||(tsvFile == 'Client28')){
+			  if (d.year == "5"){
+			 return (d.benchmark == 3 || d.benchmark == 8 || d.benchmark == 10 || d.benchmark == 11 || d.benchmark == 12 
+			 || d.benchmark == 14 || d.benchmark == 16 || d.benchmark == 15|| d.benchmark == 6 || d.benchmark == 7)
+			 }}
+			 if ((tsvFile == 'Client15')||(tsvFile == 'Client18')||(tsvFile == 'Client31')||(tsvFile == 'Client34')){
+			  if (d.year == "5"){
+			 return (d.benchmark == 3 || d.benchmark == 10 || d.benchmark == 11 || d.benchmark == 12 
+			 || d.benchmark == 14 || d.benchmark == 16 || d.benchmark == 15|| d.benchmark == 6 || d.benchmark == 7)
+			 }}
+			if ((tsvFile == 'Client21')){
+			if (d.year == "4") return (d.benchmark == 3 || d.benchmark == 8 || d.benchmark == 10 || d.benchmark == 11 || d.benchmark == 12 
+			 || d.benchmark == 14 || d.benchmark == 16 || d.benchmark == 15|| d.benchmark == 5)
+			 else
+			 if (d.year == "5") return (d.benchmark == 3 || d.benchmark == 8 || d.benchmark == 10 || d.benchmark == 11 || d.benchmark == 12 
+			 || d.benchmark == 14 || d.benchmark == 16 || d.benchmark == 15|| d.benchmark == 6|| d.benchmark == 7)
+			 else
+			 return (d.benchmark == 3 || d.benchmark == 8 || d.benchmark == 10 || d.benchmark == 11 || d.benchmark == 12 
+			 || d.benchmark == 14 || d.benchmark == 16 || d.benchmark == 15)
+			 }
+			if ((tsvFile == 'Client5')){
+				if ((d.year == "2")||(d.year == "3")) {return (d.benchmark == 3 || d.benchmark == 10 || d.benchmark == 11 || d.benchmark == 14 || d.benchmark == 16
+				|| d.benchmark == 6|| d.benchmark == 15)}
+				else { if (d.year == "5"){
+				return (d.benchmark == 3 || d.benchmark == 10 || d.benchmark == 11 || d.benchmark == 14 || d.benchmark == 16
+				|| d.benchmark == 6|| d.benchmark == 15|| d.benchmark == 7|| d.benchmark == 8|| d.benchmark == 12)}
+				else{
+				return (d.benchmark == 3 || d.benchmark == 10 || d.benchmark == 11 || d.benchmark == 14 || d.benchmark == 16 || d.benchmark == 15)
+				}}
+				}			
+			if ((tsvFile == 'Client2')||(tsvFile == 'Client4')||(tsvFile == 'Client7')||(tsvFile == 'Client8')||(tsvFile == 'Client16')||(tsvFile == 'Client23')||(tsvFile == 'Client32')){
+				if (d.year == "5") {return (d.benchmark == 3 || d.benchmark == 10 || d.benchmark == 11 || d.benchmark == 14 || d.benchmark == 16
+				|| d.benchmark == 6|| d.benchmark == 15|| d.benchmark == 12)}
+				else {
+				return (d.benchmark == 3 || d.benchmark == 10 || d.benchmark == 11 || d.benchmark == 14 || d.benchmark == 16 || d.benchmark == 15)
+				}
+				}
+			
+			if ((tsvFile == 'Client29')){
+				if (d.year == "5") {return (d.benchmark == 3 || d.benchmark == 10 || d.benchmark == 11 || d.benchmark == 14 || d.benchmark == 16
+				|| d.benchmark == 6|| d.benchmark == 12)}
+				else	
+					return (d.benchmark == 3 || d.benchmark == 10 || d.benchmark == 11 || d.benchmark == 14 || d.benchmark == 16 || d.benchmark == 15
+					|| d.benchmark == 6 || d.benchmark == 12)
+					}
+					else if ((tsvFile == 'Client27')){
+					return (d.benchmark == 3 || d.benchmark == 10 || d.benchmark == 11 || d.benchmark == 14 || d.benchmark == 16 || d.benchmark == 15
+					|| d.benchmark == 6 || d.benchmark == 7|| d.benchmark == 8 || d.benchmark == 12)
+					}
+					
+					else if ((tsvFile == 'Client36')){
+					return (d.benchmark == 3 || d.benchmark == 10 || d.benchmark == 11 || d.benchmark == 14 || d.benchmark == 16 || d.benchmark == 15
+					 || d.benchmark == 7 || d.benchmark == 8)
+					}
+					else if ((tsvFile == 'Client3')&& (d.year == "5")){
+					return (d.benchmark == 3 || d.benchmark == 10 || d.benchmark == 11 || d.benchmark == 14 || d.benchmark == 16 || d.benchmark == 15
+					 || d.benchmark == 7)
+					}
+					
+					else {
+					if(d.year == "5")
+					return (d.benchmark == 10 || d.benchmark == 11 || d.benchmark == 14 || d.benchmark == 16)
+					else
+					return (d.benchmark == 10 || d.benchmark == 11 || d.benchmark == 14 || d.benchmark == 16 || d.benchmark == 15)
+					}
+					}
+					
+					)
+				//.filter(function(d) { d.year != '2015'return (d.benchmark == 10 || d.benchmark == 11 || d.benchmark == 14 || d.benchmark == 16)})
+			.style("opacity",0)
+			//.style("visibility", "hidden")
+			.style("stroke", "red")  // colour the line
+			.style("stroke-width","2")
+			.attr("x1", function(d) { return (d.benchmark - 1) * gridSize; })
+              .attr("y1", function(d) { return (d.year - 1) * gridSize; })
+			.attr("x2", function(d) { return ((d.benchmark - 1) * gridSize) + gridSize; })
+              .attr("y2", function(d) { return ((d.year - 1) * gridSize)+gridSize; });
+			  
+			var lines2 =  svg.selectAll(".benchmarkLines2").data(data, function(d) {return d.year+':'+d.benchmark;})
+		 .enter().append("line") 
+		 .attr('id', 'lines')
+		 //.filter(function(d) { return tsvFile == 'Client1'})	
+		 .filter(function(d) { 
+		 if ((tsvFile == 'Client33')){
+				if ((d.year == "2")||(d.year == "3")) {return (d.benchmark == 3 || d.benchmark == 10 || d.benchmark == 11 || d.benchmark == 14 || d.benchmark == 16
+				|| d.benchmark == 6|| d.benchmark == 15|| d.benchmark == 2|| d.benchmark == 7|| d.benchmark == 12)}
+				else if (d.year == "4"){
+				return (d.benchmark == 3 || d.benchmark == 10 || d.benchmark == 11 || d.benchmark == 12 || d.benchmark == 14 || d.benchmark == 16
+				|| d.benchmark == 7|| d.benchmark == 15)}
+				else if (d.year == "5"){
+				return (d.benchmark == 3 || d.benchmark == 10 || d.benchmark == 11 || d.benchmark == 14 || d.benchmark == 16
+				|| d.benchmark == 6|| d.benchmark == 15|| d.benchmark == 7|| d.benchmark == 12)}
+				
+				}
+		 if ((tsvFile == 'Client24')){
+				if ((d.year == "4")||(d.year == "5")) {return (d.benchmark == 3 || d.benchmark == 10 || d.benchmark == 11 || d.benchmark == 14 || d.benchmark == 16
+				|| d.benchmark == 7|| d.benchmark == 15)}
+				else{
+				return (d.benchmark == 3 || d.benchmark == 10 || d.benchmark == 11 || d.benchmark == 14 || d.benchmark == 16 || d.benchmark == 15)
+				}}
+		 if ((tsvFile == 'Client22')){
+				if ((d.year == "1")||(d.year == "2")||(d.year == "3")) {return (d.benchmark == 3 || d.benchmark == 10 || d.benchmark == 11 || d.benchmark == 14 || d.benchmark == 16
+				|| d.benchmark == 6|| d.benchmark == 15)}
+				else if (d.year == "4"){
+				return (d.benchmark == 3 || d.benchmark == 10 || d.benchmark == 11 || d.benchmark == 12 || d.benchmark == 14 || d.benchmark == 16
+				|| d.benchmark == 7|| d.benchmark == 15)}
+				else if (d.year == "5"){
+				return (d.benchmark == 3 || d.benchmark == 10 || d.benchmark == 11 || d.benchmark == 14 || d.benchmark == 16
+				|| d.benchmark == 6|| d.benchmark == 15|| d.benchmark == 7|| d.benchmark == 12)}
+				
+				}
+		  if ((tsvFile == 'Client13')){
+				if ((d.year == "1")||(d.year == "2")||(d.year == "3")) {return (d.benchmark == 3 || d.benchmark == 10 || d.benchmark == 11 || d.benchmark == 14 || d.benchmark == 16
+				|| d.benchmark == 6|| d.benchmark == 15 || d.benchmark == 8)}
+				else { if (d.year == "3"){
+				return (d.benchmark == 3 || d.benchmark == 10 || d.benchmark == 11 || d.benchmark == 14 || d.benchmark == 16
+				|| d.benchmark == 6|| d.benchmark == 15)}
+				else if (d.year == "5"){
+				return (d.benchmark == 3 || d.benchmark == 10 || d.benchmark == 11 || d.benchmark == 14 || d.benchmark == 16
+				|| d.benchmark == 6|| d.benchmark == 15|| d.benchmark == 7|| d.benchmark == 8)|| d.benchmark == 12}
+				else{
+				return (d.benchmark == 3 || d.benchmark == 10 || d.benchmark == 11 || d.benchmark == 14 || d.benchmark == 16 || d.benchmark == 15)
+				}}
+				}
+		 if ((tsvFile == 'Client14') || (tsvFile == 'Client25')){
+				if ((d.year == "4")) {return (d.benchmark == 3 || d.benchmark == 10 || d.benchmark == 11 || d.benchmark == 14 || d.benchmark == 16
+				|| d.benchmark == 7|| d.benchmark == 15|| d.benchmark == 8|| d.benchmark == 12)}
+				else { if (d.year == "5"){
+				return (d.benchmark == 3 || d.benchmark == 10 || d.benchmark == 11 || d.benchmark == 14 || d.benchmark == 16
+				|| d.benchmark == 6|| d.benchmark == 15|| d.benchmark == 7|| d.benchmark == 8|| d.benchmark == 12)}
+				else{
+				return (d.benchmark == 3 || d.benchmark == 10 || d.benchmark == 11 || d.benchmark == 14 || d.benchmark == 16 || d.benchmark == 15)
+				}}
+				}
+		  if ((tsvFile == 'Client13')){
+				if ((d.year == "1")||(d.year == "2")) {return (d.benchmark == 3 || d.benchmark == 10 || d.benchmark == 11 || d.benchmark == 14 || d.benchmark == 16
+				|| d.benchmark == 6|| d.benchmark == 15 || d.benchmark == 8)}
+				else { if (d.year == "3"){
+				return (d.benchmark == 3 || d.benchmark == 10 || d.benchmark == 11 || d.benchmark == 14 || d.benchmark == 16
+				|| d.benchmark == 6|| d.benchmark == 15)}
+				else if (d.year == "5"){
+				return (d.benchmark == 3 || d.benchmark == 10 || d.benchmark == 11 || d.benchmark == 14 || d.benchmark == 16
+				|| d.benchmark == 6|| d.benchmark == 15|| d.benchmark == 7|| d.benchmark == 8)|| d.benchmark == 12}
+				else{
+				return (d.benchmark == 3 || d.benchmark == 10 || d.benchmark == 11 || d.benchmark == 14 || d.benchmark == 16 || d.benchmark == 15)
+				}}
+				}
+		 if ((tsvFile == 'Client11')||(tsvFile == 'Client19')||(tsvFile == 'Client28')){
+			  if (d.year == "5"){
+			 return (d.benchmark == 3 || d.benchmark == 8 || d.benchmark == 10 || d.benchmark == 11 || d.benchmark == 12 
+			 || d.benchmark == 14 || d.benchmark == 16 || d.benchmark == 15|| d.benchmark == 6 || d.benchmark == 7)
+			 }}
+			  if ((tsvFile == 'Client15')||(tsvFile == 'Client18')||(tsvFile == 'Client31')||(tsvFile == 'Client34')){
+			  if (d.year == "5"){
+			 return (d.benchmark == 3 || d.benchmark == 10 || d.benchmark == 11 || d.benchmark == 12 
+			 || d.benchmark == 14 || d.benchmark == 16 || d.benchmark == 15|| d.benchmark == 6 || d.benchmark == 7)
+			 }}
+		 if ((tsvFile == 'Client21')){
+			if (d.year == "4") return (d.benchmark == 3 || d.benchmark == 8 || d.benchmark == 10 || d.benchmark == 11 || d.benchmark == 12 
+			 || d.benchmark == 14 || d.benchmark == 16 || d.benchmark == 15|| d.benchmark == 5)
+			 else
+			 if (d.year == "5") return (d.benchmark == 3 || d.benchmark == 8 || d.benchmark == 10 || d.benchmark == 11 || d.benchmark == 12 
+			 || d.benchmark == 14 || d.benchmark == 16 || d.benchmark == 15|| d.benchmark == 6|| d.benchmark == 7)
+			 else
+			 return (d.benchmark == 3 || d.benchmark == 8 || d.benchmark == 10 || d.benchmark == 11 || d.benchmark == 12 
+			 || d.benchmark == 14 || d.benchmark == 16 || d.benchmark == 15)
+			 }
+		 if ((tsvFile == 'Client5')){
+				if ((d.year == "2")||(d.year == "3")) {return (d.benchmark == 3 || d.benchmark == 10 || d.benchmark == 11 || d.benchmark == 14 || d.benchmark == 16
+				|| d.benchmark == 6|| d.benchmark == 15)}
+				else { if (d.year == "5"){
+				return (d.benchmark == 3 || d.benchmark == 10 || d.benchmark == 11 || d.benchmark == 14 || d.benchmark == 16
+				|| d.benchmark == 6|| d.benchmark == 15|| d.benchmark == 7||d.benchmark == 8|| d.benchmark == 12)}
+				else{
+				return (d.benchmark == 3 || d.benchmark == 10 || d.benchmark == 11 || d.benchmark == 14 || d.benchmark == 16 || d.benchmark == 15)
+				}}
+				}
+		  if ((tsvFile == 'Client2')||(tsvFile == 'Client4')||(tsvFile == 'Client7')||(tsvFile == 'Client8')||(tsvFile == 'Client16')||(tsvFile == 'Client23')||(tsvFile == 'Client32')){
+				if (d.year == "5") {return (d.benchmark == 3 || d.benchmark == 10 || d.benchmark == 11 || d.benchmark == 14 || d.benchmark == 16
+				|| d.benchmark == 6|| d.benchmark == 15|| d.benchmark == 12)}
+				else {
+				return (d.benchmark == 3 || d.benchmark == 10 || d.benchmark == 11 || d.benchmark == 14 || d.benchmark == 16 || d.benchmark == 15)
+				}
+				}
+			
+		 if ((tsvFile == 'Client29')){
+				if (d.year == "5") {return (d.benchmark == 3 || d.benchmark == 10 || d.benchmark == 11 || d.benchmark == 14 || d.benchmark == 16
+				|| d.benchmark == 6 || d.benchmark == 12)}
+				else{
+					return (d.benchmark == 3 || d.benchmark == 10 || d.benchmark == 11 || d.benchmark == 14 || d.benchmark == 16 || d.benchmark == 15
+					|| d.benchmark == 6 || d.benchmark == 12)}
+					}
+		 
+					else if ((tsvFile == 'Client27')){
+					return (d.benchmark == 3 || d.benchmark == 10 || d.benchmark == 11 || d.benchmark == 14 || d.benchmark == 16 || d.benchmark == 15
+					|| d.benchmark == 6 || d.benchmark == 7|| d.benchmark == 8 || d.benchmark == 12)
+					}
+					
+					else if ((tsvFile == 'Client36')){
+					return (d.benchmark == 3 || d.benchmark == 10 || d.benchmark == 11 || d.benchmark == 14 || d.benchmark == 16 || d.benchmark == 15
+					 || d.benchmark == 7 || d.benchmark == 8)
+					}
+					else if ((tsvFile == 'Client3')&& (d.year == "5")){
+					return (d.benchmark == 3 || d.benchmark == 10 || d.benchmark == 11 || d.benchmark == 14 || d.benchmark == 16 || d.benchmark == 15
+					 || d.benchmark == 7)
+					}
+		
+					else{
+					if(d.year == "5")
+					return (d.benchmark == 10 || d.benchmark == 11 || d.benchmark == 14 || d.benchmark == 16)
+					else
+					return (d.benchmark == 10 || d.benchmark == 11 || d.benchmark == 14 || d.benchmark == 16 || d.benchmark == 15)
+					}
+		 
+		 })
+		 //if(d.year == 1 || d.year == 2 || d.year == 3 || d.year == 4){
+				//.filter(function(d) { return (d.benchmark == 10 || d.benchmark == 11 || d.benchmark == 14 || d.benchmark == 16)})}
+		 .style("opacity",0)
+		    //.style("visibility", "hidden")
+			.style("stroke", "red")  // colour the line
+			.style("stroke-width","2")
+			.attr("x2", function(d) { return (d.benchmark - 1) * gridSize; })
+              .attr("y1", function(d) { return (d.year - 1) * gridSize; })
+			.attr("x1", function(d) { return ((d.benchmark - 1) * gridSize) + gridSize; })
+              .attr("y2", function(d) { return ((d.year - 1) * gridSize)+gridSize; })
+		//d3.selectAll("#lines").attr("display", "none");
+		lines.transition().duration(1000)
+			.style("opacity",1)
+		
+		lines2.transition().duration(1000)
+		.style("opacity",1)
+			}
+         //text = cards.append('text').text('X')
+               // .attr("x", function(d) { return (d.benchmark - 1) * gridSize; })
+             // .attr("y", function(d) { return (d.year - 1) * gridSize; })
+              // .attr('fill', 'red')
+				//.style("display","inline");
+		
+          cards.transition().duration(1000)
+              .style("fill", function(d) { return colorScale(d.value); });
+          cards.select("title").text(function(d) { return "Avg: "+ d.avg; });
+          
+          cards.exit().remove();
+          var legend = svg.selectAll(".legend")
+			.data(breaks, function(d) { return d; });
+			
+		  legend.enter().append("g")
+             .attr("class", "legend");
+          legend.append("rect")
+            .attr("x", function(d, i) { return legendElementWidth * i; })
+            .attr("y", height-150)
+            .attr("width", legendElementWidth)
+            .attr("height", gridSize / 2)
+            .style("fill", function(d, i) { return colors[i]; });
+          legend.append("text")
+            .attr("class", "mono")
+            .text(function(d) { return "= " + (Math.round(d*100)/100); })
+            .attr("x", function(d, i) { return legendElementWidth * i; })
+            .attr("y", height-160 + gridSize);
+          legend.exit().remove();
+        });  
+      };
+	heatmapChart(datasets[0], "service");
+/*********Net Promoter Score Row Chart***********/	
+	var width = 170,
+		barHeight = gridSize;
+	var rowChart = function(tsvFile, st)  {
+        d3.tsv("data/nps/"+st+"/"+tsvFile+".txt",
+        function(d) {
+          return {
+            value: +d.value
+          };
+        },
+        function(error, data)  {
+		
+		d3.select("#chartRow").remove();
+
+		var chart = d3.select("#chart2").append("svg")
+				.attr("id", "chartRow")
+				.attr("class", "chart")
+				.attr("width", width)
+				.attr("height", 500)
+				.append("g")
+				//.attr("transform", "translate(0," + margin.top + ")")
+				.attr("transform", "translate(0,220)")
+				;	
+		
+			
+		chart.append("text")
+            .text("Net Promoter Score")
+            .style("text-anchor", "right")
+			.attr("fill", "#000")
+		    .attr("font-family", "Consolas, courier")
+			.attr("font-size", "10pt")
+			.attr("transform", "translate(6, -6)")
+			;	
+		
+		var x = d3.scale.linear()
+		.domain([40, 90])
+		.range([0, width]);
+				
+		var bar = chart.selectAll("g")
+			.data(data)
+			.enter().append("g")
+			.attr("transform", function(d, i) { return "translate(0," + i * barHeight + ")"; })
+			;
+				
+			bar.append("rect")
+				.attr("class", "bar")
+				.attr("width", function(d) { return x(d.value); })
+				.attr("height", barHeight - 1);
+			bar.append("text")
+				.attr("fill", "white")
+		        .attr("font-family", "sans-serif")
+				.attr("font-size", "11px")
+				.attr("text-anchor", "end")
+				 .attr("x", function(d) { return x(d.value) - 3; })
+				 .attr("y", barHeight / 2)
+				 .attr("dy", ".35em")
+				 .text(function(d) { return d.value; });
+
+		});  
+		};
+/*********Stacked Row Chart***********/
+	var dataset;	
+	var rowChartSt = function(tsvFile, st)  {
+        d3.json("data/dpp/"+st+"/"+tsvFile+".json",
+        function(error,json)  {
+		console.log(json);
+		dataset = json;
+		d3.select("#chartRowSt").remove();
+			
+	var	height = gridSize*5,
+	
+	 series = dataset.map(function (d) {
+        return d.name;
+    }),
+    dataset = dataset.map(function (d) {
+        return d.data.map(function (o, i) {
+            return {
+                y: o.perc,
+                x: o.year
+            };
+        });
+    }),
+    stack = d3.layout.stack();
+		
+	stack(dataset);		
+	
+	var dataset = dataset.map(function (group) {
+		return group.map(function (d) {
+        // Invert the x and y values, and y0 becomes x0
+        return {
+            x: d.y,
+            y: d.x,
+            x0: d.y0
+        };
+		});
+	}),
+	chart3 = d3.select("#chart3").append("svg")
+				.attr("id", "chartRowSt")
+				.attr("class", "chart3")
+				.attr("width", width)
+				.attr("height", 500)
+				.append("g")
+				.attr("transform", "translate(0,220)"),
+				//.attr("transform", "translate(0," + margin.top + ")"),
+				
+					
+	xMax = d3.max(dataset, function (group) {
+        return d3.max(group, function (d) {
+            return d.x + d.x0;
+        });
+		}),	
+	
+	xScale = d3.scale.linear()
+        .domain([0, 50])
+        .range([0, width]),
+    years = dataset[0].map(function (d) {
+        return d.y;
+    }),
+    _ = console.log(years),
+    yScale = d3.scale.ordinal()
+        .domain(years)
+        .rangeRoundBands([0, height], .1),
+    xAxis = d3.svg.axis()
+        .scale(xScale)
+        .orient('bottom'),
+    yAxis = d3.svg.axis()
+        .scale(yScale)
+        .orient('left'),
+    colours = d3.scale.category10(),
+	colourscale = d3.scale.ordinal().range(["#FF0000", "yellow","#009933","#081d58"]),
+    groups = chart3.selectAll('g')
+        .data(dataset)
+        .enter()
+        .append('g')
+        .style('fill', function (d, i) {
+        return colourscale(i);
+    }),
+    rects = groups.selectAll('rect')
+        .data(function (d) {
+        return d;
+    })
+        .enter()
+        .append('rect')
+        .attr('x', function (d) {
+		return xScale(d.x0);
+    })
+        .attr('y', function (d, i) {
+        return yScale(d.y);
+    })
+        .attr('height', function (d) {
+        return yScale.rangeBand();
+    })
+        .attr('width', function (d) {
+        return xScale(d.x); 
+    })
+        .on('mouseover', function (d) {
+        var xPos = parseFloat(d3.select(this).attr('x')) / 2 + width / 2;
+        var yPos = parseFloat(d3.select(this).attr('y')) + yScale.rangeBand() / 2;	
+	 
+	 d3.select('#tooltip')
+            .style('left', xPos + 760+160 + 'px')
+            .style('top', yPos + 320 +'px')
+            .select('#value')
+            .text(d.x+"%");
+        d3.select('#tooltip').classed('hidden', false);
+    })
+        .on('mouseout', function () {
+        d3.select('#tooltip').classed('hidden', true);
+    })	
+	chart3.append("text")
+            .text("Detract/Passive/Promot")
+            .style("text-anchor", "right")
+			.attr("fill", "#000")
+		    .attr("font-family", "Consolas, courier")
+			.attr("font-size", "10pt")
+			.attr("transform", "translate(6, -6)")
+			;	
+	series.forEach(function (s, i) {
+    chart3.append('text')
+        .attr('fill', 'black')
+        .attr('x', width + margins.left + 8)
+        .attr('y', i * 24 + 24)
+        .text(s);
+    chart3.append('rect')
+        .attr('fill', colours(i))
+        .attr('width', 60)
+        .attr('height', 20)
+        .attr('x', width + margins.left + 90)
+        .attr('y', i * 24 + 6);
+});
+});  
+		};
+	rowChart(datasets[0]+"n", "service");
+	rowChartSt(datasets[0], "service");  
+/*********Buttons***********/    
+/*	  
+		var datasetpicker1 = d3.select("#dataset-picker1").selectAll(".dataset-button1")
+        .data(datasets.slice(0,20))
+      datasetpicker1.enter()
+        .append("input")
+        .attr("value", function(d){ return "" + d })
+        .attr("type", "button")
+        .attr("class", "dataset-button1")
+        .on("click", function(d) {
+          heatmapChart(d);	
+		  rowChart(d+"n");
+		  rowChartSt(d);
+		  barChart(d);
+		  confusionMatrix(d,2015);
+        });
+		
+	
+	
+	var datasetpicker1 = d3.select("#dataset-picker1").selectAll(".dataset-button1")
+        .data(datasets.slice(0,20))
+	  
+      datasetpicker1.enter()
+        .append("input")
+        .attr("value", function(d){ return "" + d })
+        .attr("type", "button")
+        .attr("class", "dataset-button1")
+        .on("click", function(d) {
+          heatmapChart(d);	
+		  rowChart(d+"n");
+		  rowChartSt(d);
+		  barChart(d);
+		  confusionMatrix(d,2015);
+        });
+		
+		var datasetpicker2 = d3.select("#dataset-picker2").selectAll(".dataset-button2")
+        .data(datasets.slice(20,39));
+		
+	  
+      datasetpicker2.enter()
+        .append("input")
+        .attr("value", function(d){ return "" + d })
+        .attr("type", "button")
+        .attr("class", "dataset-button2")
+        .on("click", function(d) {
+          heatmapChart(d);	
+		  rowChart(d+"n");	
+		  rowChartSt(d);
+		  barChart(d);
+		  confusionMatrix(d,2015);			
+        });
+*/		
+/*********Classification bar chart***********/   
+	var barChart = function(tsvFile)  {
+	
+	var margin = {top: 80, right: 80, bottom: 50, left: 80},
+			width = 600 - margin.left - margin.right,
+			height = 320 - margin.top - margin.bottom;
+		var x = d3.scale.ordinal()
+			.rangeRoundBands([0, width], .1);
+		var y0 = d3.scale.linear().domain([0, 1]).range([height, 0]),
+		y1 = d3.scale.linear().domain([0, 1]).range([height, 0]);
+		var xAxis = d3.svg.axis()
+			.scale(x)
+			.orient("bottom");
+		var yAxisLeft = d3.svg.axis().scale(y0).ticks(4).orient("left");
+		var yAxisRight = d3.svg.axis().scale(y1).ticks(6).orient("right");
+		
+	d3.select("#barChart").remove();
+	var chart4 = d3.select("#chart4").append("svg")
+				.attr("id", "barChart")
+				.attr("class", "graph")
+				.attr("width", width + margin.left + margin.right)
+				.attr("height", height + margin.top + margin.bottom)
+				.append("g")
+				.attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+				;	
+		
+	function type(d) {
+		d.accuracy = +d.accuracy;
+		return d;
+		}
+        d3.tsv("data/clas/"+tsvFile+".txt",
+        function(d) {
+          return {
+		  year: +d.year,
+          accuracy: +d.accuracy
+		  ,coverage: +d.coverage
+          };
+        },
+        function(error, data)  {
+
+		x.domain(data.map(function(d) { return d.year; }));
+		y0.domain([0, d3.max(data, function(d) { return d.accuracy; })]);
+
+		chart4.append("text")
+            .text("Classification - total accuracy and coverage")
+            .style("text-anchor", "middle")
+			.attr("fill", "#000")
+		    .attr("font-family", "Consolas, courier")
+			.attr("font-size", "12pt")
+			.attr("transform", "translate(200, -45)")
+			;	
+		  chart4.append("g")
+			  .attr("class", "x axis")
+			  .attr("transform", "translate(0," + height + ")")
+			  .call(xAxis);
+		  chart4.append("g")
+			  .attr("class", "y axis axisLeft")
+			  .attr("transform", "translate(0,0)")
+			  .call(yAxisLeft)
+			.append("text")
+			  .attr("y", 6)
+			  .attr("dy", "-2em")
+			  .style("text-anchor", "end")
+			  .style("text-anchor", "end")
+			  .text("Accuracy");
+			
+		  chart4.append("g")
+			  .attr("class", "y axis axisRight")
+			  .attr("transform", "translate(" + (width) + ",0)")
+			  .call(yAxisRight)
+			.append("text")
+			  .attr("y", 6)
+			  .attr("dy", "-2em")
+			  .attr("dx", "2em")
+			  .style("text-anchor", "end")
+			  .text("Coverage");
+		  bars = chart4.selectAll(".bar").data(data).enter();
+		  bars.append("rect")
+			  .attr("class", "bar1")
+			  .attr("id", "accbar")
+			  .attr("x", function(d) { return x(d.year); })
+			  .attr("width", x.rangeBand()/2)
+			  .attr("y", function(d) { return y0(d.accuracy); })
+			  .attr("height", function(d,i,j) { return height - y0(d.accuracy); })
+			  .on("mouseover",mouseover)// mouseover is defined below.
+			  .on("mouseout",mouseout);// mouseout is defined below.
+			  
+			  
+		  bars.append("text").text(function(d){ return d.accuracy; })
+				.attr("class", "bar1")
+			   .attr("x", function(d) { return x(d.year)+5; })
+			   .attr("y", function(d) { return y0(d.accuracy)-5; })
+			   .attr("text-anchor", "right");
+					
+		  bars.append("rect")
+			  .attr("class", "bar2")
+			  .attr("id", "covbar")
+			  .attr("x", function(d) { return x(d.year) + x.rangeBand()/2; })
+			  .attr("width", x.rangeBand() / 2)
+			  .attr("y", function(d) { return y1(d.coverage); })
+			  .attr("height", function(d,i,j) { return height - y1(d.coverage); })
+			  .on("mouseover",mouseover)// mouseover is defined below.
+			  .on("mouseout",mouseout);// mouseout is defined below.
+		bars.append("text").text(function(d){ return d.coverage; })
+				.attr("class", "bar2")
+			   .attr("x", function(d) { return x(d.year) + x.rangeBand()/2 +5; })
+			   .attr("y", function(d) { return y1(d.coverage)-5; })
+			   .attr("text-anchor", "right");
+		
+		function mouseover(d){
+			confusionMatrix(tsvFile, d.year);
+        }
+        
+        function mouseout(d){ 
+		confusionMatrix(tsvFile, 2015);
+        }
+		});
+				};	
+	
+	barChart(datasets[0]);
+/*********Confusion Matrix***********/   	
+	  var confusionMatrix = function(tsvFile, year) {
+	  
+	  var margin = { top: 80, right: 0, bottom: 50, left: 80 },
+          width = 480 - margin.left - margin.right,
+          height = 320 - margin.top - margin.bottom,
+          gridSize = Math.floor(width / 6),
+          legendElementWidth = gridSize*2,
+          buckets = 9,
+          //colors = ["#ffffd9","#edf8b1","#c7e9b4","#7fcdbb","#41b6c4","#1d91c0","#225ea8","#253494","#081d58"], // alternatively colorbrewer.YlGnBu[9]
+		  colors_bad=["rgb(253,174,97)", "rgb(244,109,67)", "rgb(215,48,39)", "rgb(165,0,38)"] 
+		  //"rgb(255,255,191)", 
+		  colors_good=["rgb(217,239,139)", "rgb(166,217,106)","rgb(102,189,99)", "rgb(26,152,80)" ]
+		  colors=["rgb(165,0,38)", "rgb(215,48,39)", "rgb(244,109,67)", "rgb(253,174,97)", "rgb(254,224,139)", 
+		  //"rgb(255,255,191)", 
+		  "rgb(217,239,139)", "rgb(166,217,106)","rgb(102,189,99)", "rgb(26,152,80)" ]
+          categories = ["Promoters", "Passive", "Detractors"],
+          datasets = ["data.tsv", "data2.tsv"];
+
+	  
+	  d3.tsv("data/cm/"+tsvFile+".txt",
+        function(d) {
+          return {  
+		  year: d.year,
+            row: +d.row,
+            col: +d.col,
+            value: +d.value
+          };
+        },
+        function(error, data) {
+		d3.select("#confMatrix").remove();
+
+		var chart5 = d3.select("#chart5").append("svg")
+		  .attr("id", "confMatrix")
+          .attr("width", width + margin.left + margin.right)
+          .attr("height", height + margin.top + margin.bottom)
+          .append("g")
+          .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+
+      var rowLabels = chart5.selectAll(".rowLabel")
+          .data(categories)
+          .enter().append("text")
+            .text(function (d) { return d; })
+            .attr("x", 0)
+            .attr("y", function (d, i) { return i * gridSize; })
+            .style("text-anchor", "end")
+            .attr("transform", "translate(-6," + gridSize / 1.5 + ")")
+            .attr("class", "dayLabel mono axis axis-important");
+
+      var colLabels = chart5.selectAll(".colLabel")
+          .data(categories)
+          .enter().append("text")
+            .text(function(d) { return d; })
+            .attr("x", function(d, i) { return i * gridSize; })
+            .attr("y", 0)
+            .style("text-anchor", "middle")
+            .attr("transform", "translate(" + gridSize / 2 + ", -6)")
+            .attr("class", "timeLabel mono axis-important");
+		chart5.select("#current").remove();
+		chart5.append("text")
+				.attr("id", "current")
+				.text("Confusion matrix: "+year)
+				.attr("font-size", "12pt")
+				.attr("font-family", "Consolas, courier")
+				.attr("x", 0)
+				.attr("y", 0)
+				.attr("transform", "translate(-30 , -45)");
+
+		  var data = data.filter(function(s){ return s.year == year;})
+		  
+		  var colorScale = d3.scale.quantile()
+              .domain([0, buckets - 1, d3.max(data, function (d) { return d.value; })])
+              .range(colors);
+		  var colorScale1 = d3.scale.quantile()
+              .domain([0, 4, d3.max(data, function (d) { return d.value; })])
+              .range(colors_bad);
+		  var colorScale2 = d3.scale.quantile()
+              .domain([0, 4, d3.max(data, function (d) { return d.value; })])
+              .range(colors_good);
+
+          var cards = chart5.selectAll(".col")
+              .data(data, function(d) {return d.row+':'+d.col;});
+
+
+
+          cards.enter().append("rect")
+
+              .attr("x", function(d) { return (d.col - 1) * gridSize; })
+              .attr("y", function(d) { return (d.row - 1) * gridSize; })
+              .attr("rx", 4)
+              .attr("ry", 4)
+              .attr("class", "hour bordered")
+              .attr("width", gridSize)
+              .attr("height", gridSize)
+			  .style("fill", "rgb(255,255,191)");
+			  
+			  
+		cards.transition().duration(1000)
+              .style("fill", function(d) { return (d.col == d.row)? colorScale2(d.value) : colorScale1(d.value); });
+			  
+		cards.enter().append("text").text(function(d){ return d.value; })
+			  .attr("x", function(d) { return (d.col - 1) * gridSize+ 0.5*gridSize; })
+              .attr("y", function(d) { return (d.row - 1) * gridSize+ 0.5*gridSize+5; })
+			.style("fill", "white")
+			.style("font-size", "16pt")
+			.attr("text-anchor", "middle");
+          
+          cards.exit().remove();
+        });  
+      };
+	
+	confusionMatrix(datasets[0], 2015);
+	
+    </script>
+	<div id="description">
+<p> Net Promoter Score is a measure of a customer loyalty. The datasetset was divided into 38 clients in years 2011-2015. 
+<br>The clients are companies providing repair services of heavy equipment. 
+<br> Their customer's feedback is described by a number of features, including 80 features showing answers to questions related to serviced provided by clients (called benchmarks).
+ 
+<h3>Decision Reducts</h3>
+<p>The <b>"Decision Reducts" matrix </b> visualizes minimal sets of benchmarks (reducts) that determine NPS (per chosen client's dataset in a given year).
+<br>Each colored cell in the matrix represents benchmark that was found in a reduct for the given year and client.
+<br> The color scale corresponds to occurance percentage: darker cells indicate benchmarks 
+that belong to more reducts than benchmarks represented by lighter cells. 
+<br>So, the darker the cell, the stronger the impact of the associated benchmark on promoter score.
+<br>Red cross in a cell means that the benchmark has not been asked the client in the year.
+<br> The average benchmark scores per year are visible after clicking on the client button and moving the mouse pointer over the cell.
+<br> Benchmark names are visible after pointing over the Benchmark Code. 
+
+<p> The row charts represent: <b> NPS score </b> per year per client and <b>Detractors/Passive/Promoters distribution</b> (the percentage visible after pointing over the corresponding area). 
+<br>Empty rows/bars mean there was no corresponding data for the given client in that year.
+<h3>Automatic classification</h3>
+<p> The classification section shows evaluation of classifier built on the client's data for the given year.
+<br> Evaluation was performed with 10-fold cross-validation on <b>decomposition tree classifier</b>. Bar chart shows <b>accuracy</b> and <b>coverage</b> per yearly data.
+<br> Details on classification accuracy for different categories are shown in a <b>confusion matrix</b> (updates after pointing over the accuracy/coverage bar for the corresponding year).
+<br> Rows in this matrix correspond to actual decision classes (all possible values of decision) while columns represent decision values as returned
+by classifier in discourse. 
+<br> The values on diagonal represent correctly classified cases.
+
+<h3>Dendogram</h3>
+<p> Clients form the domain for the agglomerative clustering algorithm based on their semantic distance. 
+<br>Clients are compared in terms of the similarity of their knowledge concerning the meaning of three concepts: promoter, passive, and detractor. 
+<p> Clients which are semantically close to each other can have their datasets merged and the same considered as a single client from the business
+perspective (customers have similar opinion about them). 
+<br>The dataset extensions are shown on dendogram (as colored client's nodes with corresponding number of extension).
+<p>The resulting dendrogram is a skeleton for the collection of hierarchically structured recommender systems. Lower the nodes in the
+dendrogram, more specialized the recommender systems are 
+<br>and the same the classifiers and action rules used to build their recommendation
+engines have higher precision and accuracy. 
+<br>The recommendations are
+based on action rules which are extracted from the datasets assigned to all nodes of the
+dendrogram. 
+<br>Higher a node in the dendrogram, the dataset assigned to it is larger - it
+is built by taking the union of all datasets assigned to the ancestors of that node.</div>
+  </body>
+</html>

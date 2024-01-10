@@ -1,0 +1,179 @@
+id,size,actions,impact,feasibility,attractiveness
+0,1,make invoice accurate and clear,1.179155572,5,113.198935
+1,2,ensure service done correctly,6.203659817,5,570.7367032
+1,2,show care and respect from technician,6.203659817,5,570.7367032
+2,2,ensure service done correctly,1.673640167,5,153.9748954
+2,2,make invoice accurate and clear,1.673640167,5,153.9748954
+3,2,ensure service done correctly,1.106724026,5,101.8186104
+3,2,improve technician's knowledge,1.106724026,5,101.8186104
+4,3,ensure service done correctly,7.671928323,5,675.1296924
+4,3,make invoice accurate and clear,7.671928323,5,675.1296924
+4,3,show care and respect from technician,7.671928323,5,675.1296924
+5,3,ensure service done correctly,7.156129387,5,629.7393861
+5,3,improve technician's knowledge,7.156129387,5,629.7393861
+5,3,show care and respect from technician,7.156129387,5,629.7393861
+6,3,ensure service done correctly,6.751718041,5,594.1511876
+6,3,staff show care and respect to customers,6.751718041,5,594.1511876
+6,3,show care and respect from technician,6.751718041,5,594.1511876
+7,3,ensure service done correctly,6.287050016,5,553.2604014
+7,3,show care and respect from technician,6.287050016,5,553.2604014
+7,3,improve staff's knowledge,6.287050016,5,553.2604014
+8,3,ensure service done correctly,3.98081068,5,350.3113399
+8,3,improve proactive communication,3.98081068,5,350.3113399
+8,3,improve technician's knowledge,3.98081068,5,350.3113399
+9,3,ensure service done correctly,1.673640167,5,147.2803347
+9,3,improve proactive communication,1.673640167,5,147.2803347
+9,3,improve staff's knowledge,1.673640167,5,147.2803347
+10,3,staff show care and respect to customers,0.836820084,5,73.64016736
+10,3,make invoice accurate and clear,0.836820084,5,73.64016736
+10,3,show care and respect from technician,0.836820084,5,73.64016736
+11,4,ensure service done correctly,8.638396589,5,725.6253135
+11,4,staff show care and respect to customers,8.638396589,5,725.6253135
+11,4,make invoice accurate and clear,8.638396589,5,725.6253135
+11,4,show care and respect from technician,8.638396589,5,725.6253135
+12,4,ensure service done correctly,8.577942352,5,720.5471575
+12,4,improve technician's knowledge,8.577942352,5,720.5471575
+12,4,make invoice accurate and clear,8.577942352,5,720.5471575
+12,4,show care and respect from technician,8.577942352,5,720.5471575
+13,4,ensure service done correctly,8.558563424,5,718.9193276
+13,4,improve proactive communication,8.558563424,5,718.9193276
+13,4,improve technician's knowledge,8.558563424,5,718.9193276
+13,4,show care and respect from technician,8.558563424,5,718.9193276
+14,4,ensure service done correctly,7.977812226,5,670.136227
+14,4,staff show care and respect to customers,7.977812226,5,670.136227
+14,4,improve technician's knowledge,7.977812226,5,670.136227
+14,4,show care and respect from technician,7.977812226,5,670.136227
+15,4,ensure service done correctly,7.712404672,5,647.8419924
+15,4,improve proactive communication,7.712404672,5,647.8419924
+15,4,show care and respect from technician,7.712404672,5,647.8419924
+15,4,improve staff's knowledge,7.712404672,5,647.8419924
+16,4,ensure service done correctly,7.657929628,5,643.2660887
+16,4,improve technician's knowledge,7.657929628,5,643.2660887
+16,4,show care and respect from technicia,7.657929628,5,643.2660887
+16,4,improve staff's knowledge,7.657929628,5,643.2660887
+17,4,ensure service done correctly,7.253518281,5,609.2955356
+17,4,improve proactive communication,7.253518281,5,609.2955356
+17,4,staff show care and respect to customers,7.253518281,5,609.2955356
+17,4,show care and respect from technician,7.253518281,5,609.2955356
+18,4,ensure service done correctly,5.319722814,5,446.8567164
+18,4,improve proactive communication,5.319722814,5,446.8567164
+18,4,improve technician's knowledge,5.319722814,5,446.8567164
+18,4,make invoice accurate and clear,5.319722814,5,446.8567164
+19,4,ensure service done correctly,4.817630764,5,404.6809842
+19,4,improve proactive communication,4.817630764,5,404.6809842
+19,4,improve technician's knowledge,4.817630764,5,404.6809842
+19,4,improve staff's knowledge,4.817630764,5,404.6809842
+20,4,ensure service done correctly,4.399220722,5,369.5345407
+20,4,improve proactive communication,4.399220722,5,369.5345407
+20,4,staff show care and respect to customers,4.399220722,5,369.5345407
+20,4,improve technician's knowledge,4.399220722,5,369.5345407
+21,4,improve proactive communication,2.092050209,5,175.7322176
+21,4,improve technician's knowledge,2.092050209,5,175.7322176
+21,4,make invoice accurate and clear,2.092050209,5,175.7322176
+21,4,show care and respect from technician,2.092050209,5,175.7322176
+22,4,ensure service done correctly,1.673640167,5,140.5857741
+22,4,improve proactive communication,1.673640167,5,140.5857741
+22,4,make invoice accurate and clear,1.673640167,5,140.5857741
+22,4,improve staff's knowledge,1.673640167,5,140.5857741
+23,4,improve proactive communication,0.418410042,5,35.14644351
+23,4,staff show care and respect to customers,0.418410042,5,35.14644351
+23,4,improve technician's knowledge,0.418410042,5,35.14644351
+23,4,show care and respect from technician,0.418410042,5,35.14644351
+24,4,improve proactive communication,0.418410042,5,35.14644351
+24,4,improve technician's knowledge,0.418410042,5,35.14644351
+24,4,show care and respect from technician,0.418410042,5,35.14644351
+24,4,improve staff's knowledge,0.418410042,5,35.14644351
+25,5,ensure service done correctly,11.23135965,5,898.5087724
+25,5,improve proactive communication,11.23135965,5,898.5087724
+25,5,improve technician's knowledge,11.23135965,5,898.5087724
+25,5,show care and respect from technician,11.23135965,5,898.5087724
+25,5,improve staff's knowledge,11.23135965,5,898.5087724
+26,5,ensure service done correctly,11.04501107,5,883.6008853
+26,5,improve proactive communication,11.04501107,5,883.6008853
+26,5,staff show care and respect to customers,11.04501107,5,883.6008853
+26,5,improve technician's knowledge,11.04501107,5,883.6008853
+26,5,show care and respect from technician,11.04501107,5,883.6008853
+27,5,ensure service done correctly,9.998927154,5,799.9141723
+27,5,improve proactive communication,9.998927154,5,799.9141723
+27,5,improve technician's knowledge,9.998927154,5,799.9141723
+27,5,make invoice accurate and clear,9.998927154,5,799.9141723
+27,5,show care and respect from technician,9.998927154,5,799.9141723
+28,5,ensure service done correctly,8.678872937,5,694.309835
+28,5,improve proactive communication,8.678872937,5,694.309835
+28,5,staff show care and respect to customers,8.678872937,5,694.309835
+28,5,show care and respect from technician,8.678872937,5,694.309835
+28,5,improve staff's knowledge,8.678872937,5,694.309835
+29,5,ensure service done correctly,8.646487115,5,691.7189692
+29,5,staff show care and respect to customers,8.646487115,5,691.7189692
+29,5,improve technician's knowledge,8.646487115,5,691.7189692
+29,5,make invoice accurate and clear,8.646487115,5,691.7189692
+29,5,show care and respect from technician,8.646487115,5,691.7189692
+30,5,ensure service done correctly,8.573572498,5,685.8857998
+30,5,improve proactive communication,8.573572498,5,685.8857998
+30,5,staff show care and respect to customers,8.573572498,5,685.8857998
+30,5,make invoice accurate and clear,8.573572498,5,685.8857998
+30,5,show care and respect from technician,8.573572498,5,685.8857998
+31,5,ensure service done correctly,7.712404672,5,616.9923737
+31,5,improve proactive communication,7.712404672,5,616.9923737
+31,5,make invoice accurate and clear,7.712404672,5,616.9923737
+31,5,show care and respect from technician,7.712404672,5,616.9923737
+31,5,improve staff's knowledge,7.712404672,5,616.9923737
+32,5,ensure service done correctly,6.556095022,5,524.4876018
+32,5,improve proactive communication,6.556095022,5,524.4876018
+32,5,staff show care and respect to customers,6.556095022,5,524.4876018
+32,5,improve technician's knowledge,6.556095022,5,524.4876018
+32,5,improve staff's knowledge,6.556095022,5,524.4876018
+33,5,ensure service done correctly,6.211326537,5,496.9061229
+33,5,improve proactive communication,6.211326537,5,496.9061229
+33,5,improve technician's knowledge,6.211326537,5,496.9061229
+33,5,make invoice accurate and clear,6.211326537,5,496.9061229
+33,5,improve staff's knowledge,6.211326537,5,496.9061229
+34,5,ensure service done correctly,6.211326537,5,496.9061229
+34,5,improve proactive communication,6.211326537,5,496.9061229
+34,5,staff show care and respect to customers,6.211326537,5,496.9061229
+34,5,improve technician's knowledge,6.211326537,5,496.9061229
+34,5,make invoice accurate and clear,6.211326537,5,496.9061229
+35,5,improve proactive communication,3.765690377,5,301.2552301
+35,5,staff show care and respect to customers,3.765690377,5,301.2552301
+35,5,improve technician's knowledge,3.765690377,5,301.2552301
+35,5,make invoice accurate and clear,3.765690377,5,301.2552301
+35,5,show care and respect from technician,3.765690377,5,301.2552301
+36,5,improve proactive communication staff show care and respect to customers improve technician's knowledge show care and respect from technician improve staff's knowledge,0.418410042,5,33.47280335
+37,6,ensure service done correctly,12.0063498,5,912.4825844
+37,6,improve proactive communication,12.0063498,5,912.4825844
+37,6,staff show care and respect to customers,12.0063498,5,912.4825844
+37,6,improve technician's knowledge,12.0063498,5,912.4825844
+37,6,make invoice accurate and clear,12.0063498,5,912.4825844
+37,6,show care and respect from technician,12.0063498,5,912.4825844
+38,6,ensure service done correctly,11.70455334,5,889.5460535
+38,6,improve proactive communication,11.70455334,5,889.5460535
+38,6,improve technician's knowledge,11.70455334,5,889.5460535
+38,6,make invoice accurate and clear,11.70455334,5,889.5460535
+38,6,show care and respect from technician,11.70455334,5,889.5460535
+38,6,improve staff's knowledge,11.70455334,5,889.5460535
+39,6,ensure service done correctly,11.68595733,5,888.1327573
+39,6,improve proactive communication,11.68595733,5,888.1327573
+39,6,staff show care and respect to customers,11.68595733,5,888.1327573
+39,6,improve technician's knowledge,11.68595733,5,888.1327573
+39,6,show care and respect from technician,11.68595733,5,888.1327573
+39,6,improve staff's knowledge,11.68595733,5,888.1327573
+40,6,ensure service done correctly,9.515693021,5,723.1926696
+40,6,improve proactive communication,9.515693021,5,723.1926696
+40,6,staff show care and respect to customers,9.515693021,5,723.1926696
+40,6,make invoice accurate and clear,9.515693021,5,723.1926696
+40,6,show care and respect from technician,9.515693021,5,723.1926696
+40,6,improve staff's knowledge,9.515693021,5,723.1926696
+41,7,ensure service done correctly,8.786610879,5,667.7824268
+41,7,improve proactive communication,8.786610879,5,667.7824268
+41,7,staff show care and respect to customers,8.786610879,5,667.7824268
+41,7,improve technician's knowledge,8.786610879,5,667.7824268
+41,7,make invoice accurate and clear,8.786610879,5,667.7824268
+41,7,improve staff's knowledge,8.786610879,5,667.7824268
+41,7,ensure service done correctly improve proactive communication staff show care and respect to customers improve technician's knowledge make invoice accurate and clear improve staff's knowledge,8.786610879,5,667.7824268
+42,7,ensure service done correctly,12.13389121,5,873.6401674
+42,7,improve proactive communication,12.13389121,5,873.6401674
+42,7,staff show care and respect to customers,12.13389121,5,873.6401674
+42,7,improve technician's knowledge,12.13389121,5,873.6401674
+42,7,make invoice accurate and clear,12.13389121,5,873.6401674
+42,7,show care and respect from technician,12.13389121,5,873.6401674
+42,7,improve staff's knowledge,12.13389121,5,873.6401674

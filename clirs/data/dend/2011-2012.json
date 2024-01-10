@@ -1,0 +1,213 @@
+{
+ "name": "All",
+ "children": [
+  {
+   "name": "cluster2",
+   "children": [
+    {
+     "name": "cluster4",
+     "children": [
+      {
+        "name": "cluster7",
+        "children": [
+          {"name":"cluster12",
+            "children": [
+              {"name":"Client21"},
+              {"name":"Client22"}
+              ]
+        },
+        {
+          "name":"cluster13",
+          "children": [
+            {"name":"cluster20",
+            "children": [
+              {"name":"Client3"},
+              {
+                "name":"cluster28",
+                "children": [
+                  {"name":"Client14"},
+                  {
+                    "name":"cluster31",
+                    "children": [
+                      {"name":"Client13"},
+                      {
+                        "name":"cluster34",
+                        "children": [
+                          {"name":"Client1"},
+                          {"name":"Client12"}
+                          ]
+                        
+                      }
+                    ]
+                    
+                  }
+                ]
+                
+              }
+            ]
+        
+            },
+            {"name":"cluster21",
+              "children": [
+              {"name":"Client26"},
+              {
+                "name":"cluster29",
+                "children": [
+                  {"name":"Client6"},
+                  {
+                    "name":"cluster32",
+                    "children": [
+                      {"name":"Client31"},
+                      {"name":"Client34"}
+                      ]
+                    
+                  }
+              ]
+                
+              }
+            ]
+        
+            }
+        ]
+        
+        }
+      ]
+      },
+      {
+        "name": "cluster8",
+         "children": [
+            {"name":"cluster14",
+            "children": [
+            {"name":"NE1"},
+            {
+              "name":"cluster22",
+               "children": [
+                {"name":"Client11"},
+                {"name":"Client30"}
+              ]
+              
+            }
+            ]
+        
+        },
+        {"name":"cluster15",
+         "children": [
+            {"name":"cluster23",
+               "children": [
+                {"name":"Client2"},
+                {"name":"NE2"}
+              ]
+            
+            },
+            {"name":"cluster24",
+            "children": [
+              {"name":"Client17"},
+              {
+                "name":"cluster30",
+                "children": [
+                  {"name":"Client7"},
+                  {
+                    "name":"cluster33",
+                     "children": [
+                      {"name":"Client26"},
+                      {"name":"Client38"}
+                    ]
+                    
+                  }
+                ]
+              }
+            ]
+            
+            }
+            ]
+        
+        }
+        ]
+      }
+     ]
+    },
+    {
+     "name": "cluster5",
+     "children": [
+      {"name": "Client18"},
+      {
+        "name": "cluster9",
+         "children": [
+          {"name":"Client15"},
+          {"name":"cluster16",
+         "children": [
+          {"name":"Client24"},
+          {"name":"Client28"}
+        ]
+        }
+      ]
+      }
+     ]
+    }
+	]
+  },
+  
+  {
+   "name": "cluster3",
+   "children": [
+   
+    {
+      "name":"Client9"
+    },
+     {
+     "name": "cluster6",
+     "children": [
+      {
+        "name": "cluster10",
+        "children": [
+          {"name":"cluster17",
+          "children": [
+            {"name":"cluster25",
+             "children": [
+              {"name":"Client5"},
+              {"name":"Client16"}
+            ]
+        
+            },
+            {"name":"cluster26",
+             "children": [
+              {"name":"Client33"},
+              {"name":"Client35"}
+            ]
+        
+            }
+      ]
+        
+        },
+          {"name":"cluster18",
+           "children": [
+            {"name":"Client20"},
+            {
+              "name":"cluster27",
+             "children": [
+                {"name":"Client19"},
+                {"name":"Client37"}
+            ]
+              
+            }
+            ]
+          
+          }
+      ]
+        
+      },
+      {"name": "cluster11",
+         "children": [
+        {"name":"NE3"},
+        {"name":"Client32"}
+        ]
+      }
+     ]
+    }
+	]
+  }
+ 
+ 
+ 
+ ]
+}
